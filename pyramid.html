@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modo Pirâmide Holográfica</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <script async src="https://unpkg.com/es-module-shims@1.8.0/dist/es-module-shims.js"></script>
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.156.1/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.156.1/examples/jsm/"
+        }
+    }
+    </script>
+    <style>
+        body {
+            background: black;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        #container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .view {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+        }
+
+        /* Position the 4 views for the pyramid hologram */
+        #top {
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%) rotate(180deg);
+        }
+
+        #bottom {
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%) rotate(0deg);
+        }
+
+        #left {
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%) rotate(90deg);
+        }
+
+        #right {
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%) rotate(-90deg);
+        }
+
+        canvas {
+            display: block;
+        }
+
+        .center-mark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 2px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translate(-50%, -50%);
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            opacity: 0.3;
+        }
+
+        .back-btn:hover {
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body>
+    <a href="index.html" class="btn btn-secondary back-btn">← Sair</a>
+    <div class="center-mark"></div>
+
+    <div id="container">
+        <div id="top" class="view"></div>
+        <div id="bottom" class="view"></div>
+        <div id="left" class="view"></div>
+        <div id="right" class="view"></div>
+    </div>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+        let scene, model;
+        const views = ['top', 'bottom', 'left', 'right'];
+        const renderers = {};
+        const cameras = {};
+
+        function init() {
+            scene = new THREE.Scene();
+            scene.background = null;
+
+            // Lights
+            const ambientLight = new THREE.AmbientLight(0xffffff, 2);
+            scene.add(ambientLight);
+
+            const directionalLight = new THREE.DirectionalLight(0x00f2ff, 3);
+            directionalLight.position.set(0, 1, 1);
+            scene.add(directionalLight);
+
+            // Loader
+            const loader = new GLTFLoader();
+            const DB_NAME = 'HolografixDB';
+            const STORE_NAME = 'models';
+
+            async function loadModel() {
+                const hasCustom = sessionStorage.getItem('hasCustomModel');
+                const defaultModel = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
+
+                if (hasCustom) {
+                    const request = indexedDB.open(DB_NAME, 1);
+                    request.onsuccess = (e) => {
+                        const db = e.target.result;
+                        const transaction = db.transaction(STORE_NAME, 'readonly');
+                        const store = transaction.objectStore(STORE_NAME);
+                        const getRequest = store.get('currentModel');
+
+                        getRequest.onsuccess = () => {
+                            const blob = getRequest.result;
+                            if (blob) {
+                                const url = URL.createObjectURL(blob);
+                                loader.load(url, (gltf) => setupModel(gltf));
+                            } else {
+                                loader.load(defaultModel, (gltf) => setupModel(gltf));
+                            }
+                        };
+                    };
+                } else {
+                    loader.load(defaultModel, (gltf) => setupModel(gltf));
+                }
+            }
+
+            function setupModel(gltf) {
+                model = gltf.scene;
+                const box = new THREE.Box3().setFromObject(model);
+                const center = box.getCenter(new THREE.Vector3());
+                const size = box.getSize(new THREE.Vector3());
+                const maxDim = Math.max(size.x, size.y, size.z);
+                const scale = 2 / maxDim;
+                model.scale.set(scale, scale, scale);
+                model.position.sub(center.multiplyScalar(scale));
+                scene.add(model);
+
+                if (gltf.animations.length > 0) {
+                    const mixer = new THREE.AnimationMixer(model);
+                    mixer.clipAction(gltf.animations[0]).play();
+                    const clock = new THREE.Clock();
+                    const animateWithMixer = () => {
+                        requestAnimationFrame(animateWithMixer);
+                        mixer.update(clock.getDelta());
+                    };
+                    animateWithMixer();
+                }
+            }
+            loadModel();
+
+
+
+            // Set up 4 views
+            views.forEach(id => {
+                const container = document.getElementById(id);
+                const rect = container.getBoundingClientRect();
+
+                const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+                renderer.setSize(rect.width, rect.height);
+                renderer.setPixelRatio(window.devicePixelRatio);
+                container.appendChild(renderer.domElement);
+                renderers[id] = renderer;
+
+                const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+                camera.position.z = 4;
+                cameras[id] = camera;
+            });
+
+            animate();
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            if (model) {
+                model.rotation.y += 0.01;
+            }
+
+            views.forEach(id => {
+                renderers[id].render(scene, cameras[id]);
+            });
+        }
+
+        window.addEventListener('resize', () => {
+            views.forEach(id => {
+                const container = document.getElementById(id);
+                const rect = container.getBoundingClientRect();
+                renderers[id].setSize(rect.width, rect.height);
+            });
+        });
+
+        init();
+    </script>
+</body>
+
+</html>

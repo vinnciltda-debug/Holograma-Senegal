@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Holograma 3D - Experiência Imersiva</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <!-- QR Code Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        .qr-wrapper {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .qr-glow {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: var(--primary);
+            filter: blur(80px);
+            opacity: 0.2;
+            z-index: -1;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-mesh"></div>
+
+    <div class="container">
+        <header>
+            <div class="logo">HOLOGRAFIX.AI</div>
+            <nav>
+                <a href="https://modelviewer.dev" target="_blank" class="btn btn-secondary"
+                    style="color: white; border: 1px solid var(--glass-border)">Documentação Google</a>
+            </nav>
+        </header>
+
+        <section class="hero">
+            <h1>Sua Realidade, <br><span
+                    style="background: linear-gradient(45deg, #00f2ff, #7000ff); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">Redefinida
+                    em 3D.</span></h1>
+            <p class="subtitle">Faça o upload do seu arquivo .GLB ou .GLTF, analise a malha e projete em modo
+                holográfico ou
+                realidade aumentada.</p>
+
+            <div class="upload-zone" id="drop-zone">
+                <div class="upload-content">
+                    <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="var(--primary)"
+                        stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="17 8 12 3 7 8" />
+                        <line x1="12" y1="3" x2="12" y2="15" />
+                    </svg>
+                    <h3>Arraste seu modelo .GLB / .GLTF</h3>
+                    <p>Ou clique para selecionar um arquivo</p>
+                    <input type="file" id="file-input" accept=".glb,.gltf" style="display: none;">
+                    <button class="btn btn-primary" onclick="document.getElementById('file-input').click()">Selecionar
+                        Arquivo</button>
+                </div>
+            </div>
+
+            <div id="analysis-card" class="analysis-card" style="display: none;">
+                <div class="analysis-header" style="display: flex; justify-content: space-between; align-items: start;">
+                    <div>
+                        <div class="status-badge">Pronto para Projeção</div>
+                        <h2 id="model-name">NOME_DO_MODELO.GLB</h2>
+                    </div>
+                    <button class="btn-icon" id="btn-reset" title="Subir outro arquivo">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                            <path d="M3 3v5h5" />
+                        </svg>
+                    </button>
+                </div>
+
+                <div id="model-preview" class="preview-container">
+                    <!-- Three.js preview goes here -->
+                    <div class="preview-placeholder">Carregando visualização...</div>
+                </div>
+
+                <div class="analysis-grid">
+                    <div class="stat-item">
+                        <span class="label">Polígonos</span>
+                        <span class="value" id="poly-count">--</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="label">Vértices</span>
+                        <span class="value" id="vert-count">--</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="label">Tamanho</span>
+                        <span class="value" id="model-size">-- MB</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="label">Animações</span>
+                        <span class="value" id="anim-count">--</span>
+                    </div>
+                </div>
+                <div class="action-grid"
+                    style="margin-top: 2rem; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
+                    <button class="btn btn-primary" id="btn-pyramid">Pirâmide</button>
+                    <button class="btn btn-secondary" id="btn-vr">Modo VR</button>
+                    <button class="btn btn-secondary" id="btn-ar"
+                        style="border: 1px solid var(--glass-border); color: white;">Ver em AR</button>
+                </div>
+            </div>
+
+            <div id="qr-section"
+                style="display: none; margin-top: 3rem; border-top: 1px solid var(--glass-border); padding-top: 2rem;">
+                <div class="qr-config"
+                    style="margin-bottom: 2rem; max-width: 400px; margin-left: auto; margin-right: auto;">
+                    <p style="font-size: 0.8rem; color: #888; margin-bottom: 1rem;">Para ver no celular, certifique-se
+                        que ambos estão no mesmo Wi-Fi e ajuste o IP abaixo se necessário:</p>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <input type="text" id="ip-config" value="10.0.8.254:3000"
+                            style="background: var(--glass); border: 1px solid var(--glass-border); color: white; padding: 0.5rem 1rem; border-radius: 0.5rem; flex: 1; font-family: monospace;">
+                        <button class="btn btn-primary" id="btn-update-qr"
+                            style="padding: 0.5rem 1rem; font-size: 0.8rem;">Atualizar</button>
+                    </div>
+                </div>
+
+                <div class="qr-container"
+                    style="background: white; padding: 2rem; border-radius: 2rem; transform: none; box-shadow: 0 0 40px rgba(0,242,255,0.2);">
+                    <div id="qrcode" class="qr-code" style="margin-bottom: 0; padding:0;"></div>
+                    <div class="qr-label"
+                        style="color: black; margin-top: 1.5rem; font-size: 0.8rem; letter-spacing: 1px;">Escaneie para
+                        Projetar</div>
+                </div>
+
+                <div
+                    style="margin-top: 2rem; max-width: 500px; margin-left: auto; margin-right: auto; padding: 1rem; background: rgba(255,242,0,0.05); border-radius: 1rem; border: 1px solid rgba(255,242,0,0.1);">
+                    <p style="font-size: 0.75rem; color: #ccb900; line-height: 1.4;">
+                        <strong>Nota:</strong> Modelos locais subidos no PC só aparecem no PC. No celular, você verá o
+                        modelo padrão a menos que o arquivo seja hospedado online.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Three.js for Analysis -->
+    <script async src="https://unpkg.com/es-module-shims@1.8.0/dist/es-module-shims.js"></script>
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.156.1/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.156.1/examples/jsm/"
+        }
+    }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+        const DB_NAME = 'HolografixDB';
+        const STORE_NAME = 'models';
+
+        // IndexedDB Helper
+        async function saveModelToDB(file) {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, 1);
+                request.onupgradeneeded = (e) => {
+                    e.target.result.createObjectStore(STORE_NAME);
+                };
+                request.onsuccess = (e) => {
+                    const db = e.target.result;
+                    const transaction = db.transaction(STORE_NAME, 'readwrite');
+                    const store = transaction.objectStore(STORE_NAME);
+                    store.put(file, 'currentModel');
+                    transaction.oncomplete = () => resolve();
+                    transaction.onerror = () => reject();
+                };
+            });
+        }
+
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const analysisCard = document.getElementById('analysis-card');
+        const loader = new GLTFLoader();
+
+        // Drag & Drop events
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file && (file.name.toLowerCase().endsWith('.glb') || file.name.toLowerCase().endsWith('.gltf'))) {
+                handleFile(file);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) handleFile(file);
+        });
+
+        async function handleFile(file) {
+            await saveModelToDB(file);
+            const url = URL.createObjectURL(file);
+            sessionStorage.setItem('modelName', file.name);
+            sessionStorage.setItem('hasCustomModel', 'true');
+
+            // Hide upload, show analysis
+            dropZone.style.display = 'none';
+            analysisCard.style.display = 'block';
+            document.getElementById('model-name').textContent = file.name.toUpperCase();
+            document.getElementById('model-size').textContent = (file.size / (1024 * 1024)).toFixed(2) + ' MB';
+
+            // Analyze & Preview
+            loader.load(url, (gltf) => {
+                const model = gltf.scene;
+                let vertices = 0;
+                let triangles = 0;
+
+                model.traverse((node) => {
+                    if (node.isMesh) {
+                        const geometry = node.geometry;
+                        vertices += geometry.attributes.position.count;
+                        if (geometry.index) {
+                            triangles += geometry.index.count / 3;
+                        } else {
+                            triangles += geometry.attributes.position.count / 3;
+                        }
+                    }
+                });
+
+                document.getElementById('poly-count').textContent = triangles.toLocaleString();
+                document.getElementById('vert-count').textContent = vertices.toLocaleString();
+                document.getElementById('anim-count').textContent = gltf.animations.length;
+
+                // Live Preview logic
+                initPreview(model);
+
+                // Configura IP inicial se estiver em um servidor
+                const currentHost = window.location.host;
+                if (currentHost && !currentHost.includes('localhost') && !currentHost.includes('127.0.0.1')) {
+                    document.getElementById('ip-config').value = currentHost;
+                }
+
+                updateDynamicQR();
+                document.getElementById('qr-section').style.display = 'block';
+            });
+        }
+
+        function updateDynamicQR() {
+            const host = document.getElementById('ip-config').value;
+            const viewerUrl = `http://${host}/viewer.html`;
+            updateQRCode(viewerUrl);
+        }
+
+        document.getElementById('btn-update-qr').addEventListener('click', updateDynamicQR);
+
+
+        function initPreview(loadedModel) {
+            const container = document.getElementById('model-preview');
+            container.innerHTML = ''; // Clear placeholder
+
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            container.appendChild(renderer.domElement);
+
+            const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+            scene.add(ambientLight);
+            const light = new THREE.DirectionalLight(0xffffff, 2);
+            light.position.set(1, 1, 1);
+            scene.add(light);
+
+            // Center and scale
+            const box = new THREE.Box3().setFromObject(loadedModel);
+            const size = box.getSize(new THREE.Vector3());
+            const center = box.getCenter(new THREE.Vector3());
+            const maxDim = Math.max(size.x, size.y, size.z);
+            const scale = 3 / maxDim;
+            loadedModel.scale.set(scale, scale, scale);
+            loadedModel.position.sub(center.multiplyScalar(scale));
+
+            scene.add(loadedModel);
+            camera.position.z = 6;
+
+            function animate() {
+                requestAnimationFrame(animate);
+                loadedModel.rotation.y += 0.005;
+                renderer.render(scene, camera);
+            }
+            animate();
+
+            window.addEventListener('resize', () => {
+                if (!container.clientWidth) return;
+                camera.aspect = container.clientWidth / container.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(container.clientWidth, container.clientHeight);
+            });
+        }
+
+        function updateQRCode(url) {
+            const qrElement = document.getElementById("qrcode");
+            qrElement.innerHTML = '';
+            new QRCode(qrElement, {
+                text: url,
+                width: 250,
+                height: 250,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+        }
+
+        // Actions
+        document.getElementById('btn-reset').addEventListener('click', () => {
+            sessionStorage.clear();
+            const request = indexedDB.open(DB_NAME, 1);
+            request.onsuccess = (e) => {
+                const db = e.target.result;
+                db.transaction(STORE_NAME, 'readwrite').objectStore(STORE_NAME).clear();
+                location.reload();
+            };
+        });
+        document.getElementById('btn-pyramid').addEventListener('click', () => {
+            window.location.href = 'pyramid.html';
+        });
+
+        document.getElementById('btn-vr').addEventListener('click', () => {
+            window.location.href = 'vr.html';
+        });
+
+        document.getElementById('btn-ar').addEventListener('click', () => {
+            window.location.href = 'viewer.html';
+        });
+    </script>
+
+</body>
+
+</html>
