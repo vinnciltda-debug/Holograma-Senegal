@@ -120,46 +120,9 @@
         <a href="index.html" class="btn-outline-premium btn btn-sm px-4">Voltar ao Início</a>
     </div>
 
-    <script>
-        const modelViewer = document.querySelector('#viewer');
-        const loading = document.querySelector('#loading');
-        const titleText = document.querySelector('#model-name-ar');
+    <script src="js/db.js"></script>
+    <script src="js/viewer.js"></script>
 
-        const DB_NAME = 'HolografixDB';
-        const STORE_NAME = 'models';
-
-        async function init() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const externalUrl = urlParams.get('model');
-
-            if (externalUrl) {
-                modelViewer.src = externalUrl;
-                titleText.textContent = "Modelo Remoto";
-            } else if (sessionStorage.getItem('hasCustomModel')) {
-                const request = indexedDB.open(DB_NAME, 1);
-                request.onsuccess = (e) => {
-                    const db = e.target.result;
-                    const transaction = db.transaction(STORE_NAME, 'readonly');
-                    const getRequest = transaction.objectStore(STORE_NAME).get('currentModel');
-                    getRequest.onsuccess = () => {
-                        if (getRequest.result) {
-                            modelViewer.src = URL.createObjectURL(getRequest.result);
-                            titleText.textContent = sessionStorage.getItem('modelName') || "Análise Ativa";
-                        }
-                    };
-                };
-            } else {
-                titleText.textContent = "Astronauta (Padrão)";
-            }
-        }
-
-        init();
-
-        modelViewer.addEventListener('load', () => {
-            loading.style.opacity = '0';
-            setTimeout(() => loading.style.display = 'none', 600);
-        });
-    </script>
 </body>
 
 </html>
