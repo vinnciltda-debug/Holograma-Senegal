@@ -291,16 +291,16 @@
                     status.style.display = "block";
 
                     try {
-                        const formData = new FormData();
-                        formData.append('file', blob, sessionStorage.getItem('modelName'));
+                        const filename = sessionStorage.getItem('modelName') || 'modelo.glb';
 
-                        // Chamando nossa nova API da Vercel para o Blob Storage
-                        const response = await fetch('/api/upload', {
+                        // Enviando o arquivo PURO no corpo da requisição (mais estável)
+                        const response = await fetch(`/api/upload?filename=${encodeURIComponent(filename)}`, {
                             method: 'POST',
-                            body: formData
+                            body: blob // O arquivo vai sem FormData, direto
                         });
 
                         const data = await response.json();
+
                         if (response.ok && data.url) {
                             const rawUrl = data.url;
                             updateDynamicQR(rawUrl);
@@ -308,11 +308,11 @@
                             status.textContent = "✅ Sincronizado com Vercel Blob!";
                             status.style.color = "var(--primary)";
                             btn.textContent = "Modelo Sincronizado";
-                            console.log("Vercel Blob URL:", rawUrl);
                         } else {
                             throw new Error(data.error || "Falha no upload");
                         }
                     } catch (err) {
+
 
 
                         console.error(err);

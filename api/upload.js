@@ -1,34 +1,22 @@
 import { put } from '@vercel/blob';
 
-// Removendo o 'edge' runtime para usar Node.js padrão (mais compatível)
-export default async function handler(request) {
-  if (request.method !== 'POST') {
-    return new Response('Method Not Allowed', { status: 405 });
+export default async function handler(req, res) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
   try {
-    // No Node.js runtime da Vercel, o request é um stream amigável
-    const formData = await request.formData();
-    const file = formData.get('file');
+    const filename = req.query.filename || 'model.glb';
 
-    if (!file) {
-      return new Response('No file provided', { status: 400 });
-    }
-
-    const blob = await put(file.name || 'model.glb', file, {
+    // O Vercel Blob aceita o 'req' (stream) diretamente no Node.js padrão
+    const blob = await put(filename, req, {
       access: 'public',
       token: process.env.BLOB_READ_WRITE_TOKEN
     });
 
-    return new Response(JSON.stringify(blob), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return res.status(200).json(blob);
   } catch (error) {
-    console.error('Upload error:', error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    console.error('Erro no servidor:', error);
+    return res.status(500).json({ error: error.message });
   }
 }
