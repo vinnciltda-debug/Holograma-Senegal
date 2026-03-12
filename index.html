@@ -57,9 +57,10 @@
                         <polyline points="17 8 12 3 7 8" />
                         <line x1="12" y1="3" x2="12" y2="15" />
                     </svg>
-                    <h3>Arraste seu modelo .GLB / .GLTF</h3>
+                    <h3>Arraste seu modelo .GLB</h3>
                     <p>Ou clique para selecionar um arquivo</p>
-                    <input type="file" id="file-input" accept=".glb,.gltf" style="display: none;">
+                    <input type="file" id="file-input" accept=".glb" style="display: none;">
+
                     <button class="btn btn-primary" onclick="document.getElementById('file-input').click()">Selecionar
                         Arquivo</button>
                 </div>
@@ -201,8 +202,10 @@
             e.preventDefault();
             dropZone.classList.remove('dragover');
             const file = e.dataTransfer.files[0];
-            if (file && (file.name.toLowerCase().endsWith('.glb') || file.name.toLowerCase().endsWith('.gltf'))) {
+            if (file && file.name.toLowerCase().endsWith('.glb')) {
                 handleFile(file);
+            } else {
+                alert('Por favor, suba apenas arquivos .GLB (binários).');
             }
         });
 
