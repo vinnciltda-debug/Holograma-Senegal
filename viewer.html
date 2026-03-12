@@ -165,6 +165,16 @@
         const STORE_NAME = 'models';
 
         async function loadModel() {
+            // Priority 1: URL Parameter (for sharing/mobile)
+            const urlParams = new URLSearchParams(window.location.search);
+            const externalUrl = urlParams.get('model');
+            if (externalUrl) {
+                modelViewer.src = externalUrl;
+                modelTitle.textContent = "Modelo Remoto";
+                return;
+            }
+
+            // Priority 2: IndexedDB (for local PC use)
             const hasCustom = sessionStorage.getItem('hasCustomModel');
             if (hasCustom) {
                 const request = indexedDB.open(DB_NAME, 1);

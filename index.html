@@ -134,12 +134,18 @@
                         Projetar</div>
                 </div>
 
-                <div
-                    style="margin-top: 2rem; max-width: 500px; margin-left: auto; margin-right: auto; padding: 1rem; background: rgba(255,242,0,0.05); border-radius: 1rem; border: 1px solid rgba(255,242,0,0.1);">
-                    <p style="font-size: 0.75rem; color: #ccb900; line-height: 1.4;">
-                        <strong>Nota:</strong> Modelos locais subidos no PC só aparecem no PC. No celular, você verá o
-                        modelo padrão a menos que o arquivo seja hospedado online.
+                <div id="sync-container"
+                    style="margin-top: 2rem; max-width: 500px; margin-left: auto; margin-right: auto; padding: 1.5rem; background: rgba(0,242,255,0.05); border-radius: 1rem; border: 1px solid var(--primary);">
+                    <p style="font-size: 0.8rem; color: var(--primary); margin-bottom: 1rem; font-weight: 700;">🔄
+                        SINCRONIZAÇÃO INTELIGENTE</p>
+                    <p style="font-size: 0.75rem; color: #888; line-height: 1.4; margin-bottom: 1.5rem;">
+                        Deseja ver o modelo que você subiu agora no seu celular? Clique no botão abaixo para gerar um
+                        link temporário na nuvem.
                     </p>
+                    <button class="btn btn-primary" id="btn-sync-cloud"
+                        style="width: 100%; padding: 0.8rem;">Sincronizar Modelo com Celular</button>
+                    <div id="sync-status" style="margin-top: 1rem; font-size: 0.7rem; color: #666; display: none;">
+                        Enviando modelo...</div>
                 </div>
             </div>
         </section>
@@ -259,13 +265,68 @@
             });
         }
 
-        function updateDynamicQR() {
+        async function updateDynamicQR(externalUrl = null) {
             const host = document.getElementById('ip-config').value;
-            const viewerUrl = `http://${host}/viewer.html`;
+            let viewerUrl = `http://${host}/viewer.html`;
+            if (externalUrl) {
+                viewerUrl += `?model=${encodeURIComponent(externalUrl)}`;
+            }
             updateQRCode(viewerUrl);
         }
 
-        document.getElementById('btn-update-qr').addEventListener('click', updateDynamicQR);
+        document.getElementById('btn-update-qr').addEventListener('click', () => updateDynamicQR());
+
+        // Cloud Sync Logic
+        document.getElementById('btn-sync-cloud').addEventListener('click', async () => {
+            const btn = document.getElementById('btn-sync-cloud');
+            const status = document.getElementById('sync-status');
+
+            const request = indexedDB.open(DB_NAME, 1);
+            request.onsuccess = (e) => {
+                const db = e.target.result;
+                const transaction = db.transaction(STORE_NAME, 'readonly');
+                const store = transaction.objectStore(STORE_NAME);
+                const getRequest = store.get('currentModel');
+
+                getRequest.onsuccess = async () => {
+                    const blob = getRequest.result;
+                    if (!blob) return alert("Suba um modelo primeiro!");
+
+                    btn.disabled = true;
+                    btn.textContent = "Sincronizando...";
+                    status.style.display = "block";
+
+                    try {
+                        const formData = new FormData();
+                        formData.append('file', blob, sessionStorage.getItem('modelName'));
+
+                        // Usando tmpfiles.org como provedor temporário (CORS amigável para demos)
+                        const response = await fetch('https://tmpfiles.org/api/v1/upload', {
+                            method: 'POST',
+                            body: formData
+                        });
+
+                        const data = await response.json();
+                        if (data.status === 'success') {
+                            // Converte link de visualização em link direto de download
+                            const rawUrl = data.data.url.replace('https://tmpfiles.org/', 'https://tmpfiles.org/dl/');
+                            updateDynamicQR(rawUrl);
+
+                            status.textContent = "✅ Sincronizado! Escaneie o QR Code atualizado.";
+                            status.style.color = "var(--primary)";
+                            btn.textContent = "Modelo Sincronizado";
+                        } else {
+                            throw new Error("Falha no upload");
+                        }
+                    } catch (err) {
+                        console.error(err);
+                        status.textContent = "❌ Erro ao sincronizar. Tente novamente.";
+                        btn.disabled = false;
+                        btn.textContent = "Sincronizar Modelo com Celular";
+                    }
+                };
+            };
+        });
 
 
         function initPreview(loadedModel) {

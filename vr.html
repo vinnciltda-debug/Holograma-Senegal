@@ -86,10 +86,14 @@
             const STORE_NAME = 'models';
 
             async function loadModel() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const externalUrl = urlParams.get('model');
                 const hasCustom = sessionStorage.getItem('hasCustomModel');
                 const defaultModel = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
 
-                if (hasCustom) {
+                if (externalUrl) {
+                    loader.load(externalUrl, (gltf) => setupModel(gltf));
+                } else if (hasCustom) {
                     const request = indexedDB.open(DB_NAME, 1);
                     request.onsuccess = (e) => {
                         const db = e.target.result;
