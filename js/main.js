@@ -103,8 +103,8 @@ async function handleFile(file) {
 async function updateDynamicQR(externalUrl = null) {
     const host = document.getElementById('ip-config')?.value || window.location.host;
     const protocol = window.location.protocol;
-    let viewerUrl = `${protocol}//${host}/viewer.html`;
-    if (externalUrl) viewerUrl += `?model=${encodeURIComponent(externalUrl)}`;
+    let viewerUrl = `${protocol}//${host}/viewer.html?minimal=1`;
+    if (externalUrl) viewerUrl += `&model=${encodeURIComponent(externalUrl)}`;
 
     const qrDiv = document.getElementById('qrcode');
     if (!qrDiv) return;

@@ -79,6 +79,39 @@
             line-height: 1;
         }
 
+        /* Minimal Mode - Foco total na projeção */
+        body.minimal-mode {
+            background: #fff;
+        }
+
+        body.minimal-mode .viewer-container {
+            width: 100vw;
+            height: 100vh;
+            max-width: none;
+            background: transparent;
+            border: none;
+            box-shadow: none;
+            backdrop-filter: none;
+            border-radius: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        body.minimal-mode #ar-button {
+            position: relative;
+            bottom: auto;
+            left: auto;
+            transform: none;
+            padding: 1.5rem 3rem;
+            font-size: 1.2rem;
+            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.4);
+        }
+
+        body.minimal-mode .loading-cover p {
+            display: none;
+        }
+
         .loading-cover {
             position: absolute;
             inset: 0;

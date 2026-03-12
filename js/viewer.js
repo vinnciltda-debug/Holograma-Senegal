@@ -8,6 +8,15 @@ document.addEventListener('DOMContentLoaded', () => {
     async function init() {
         const urlParams = new URLSearchParams(window.location.search);
         const externalUrl = urlParams.get('model');
+        const isMinimal = urlParams.get('minimal') === '1';
+
+        if (isMinimal) {
+            document.body.classList.add('minimal-mode');
+            const overlay = document.querySelector('.model-info-overlay');
+            if (overlay) overlay.style.display = 'none';
+            const footer = document.querySelector('.mt-4.text-center');
+            if (footer) footer.style.display = 'none';
+        }
 
         if (externalUrl) {
             modelViewer.src = externalUrl;
