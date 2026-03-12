@@ -41,13 +41,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnReset) btnReset.addEventListener('click', resetAll);
     if (btnResetTop) btnResetTop.addEventListener('click', resetAll);
 
-    // Initial check for existing model
+    // Verificação inicial: Se já existe um modelo no banco, carrega ele automaticamente
     if (sessionStorage.getItem('hasCustomModel')) {
         getModelFromDB().then(blob => {
             if (blob) {
-                // Re-process for view if returning to home
-                const fakeFile = new File([blob], sessionStorage.getItem('modelName') || 'modelo.glb');
-                // handleFile(fakeFile); // Optional: if you want it to show up automatically
+                const modelName = sessionStorage.getItem('modelName') || 'modelo.glb';
+                const file = new File([blob], modelName, { type: "model/gltf-binary" });
+                handleFile(file);
+                console.log("Sessão restaurada: ", modelName);
             }
         });
     }
