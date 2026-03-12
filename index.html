@@ -263,14 +263,15 @@
         async function updateDynamicQR(externalUrl = null) {
             const host = document.getElementById('ip-config').value || window.location.host;
             const protocol = window.location.protocol;
-            // DIRETO PARA VR: Mudamos de viewer.html para vr.html
-            let viewerUrl = `${protocol}//${host}/vr.html`;
+            // VOLTANDO PARA AR: Mudamos para viewer.html para projeção real com a câmera
+            let viewerUrl = `${protocol}//${host}/viewer.html`;
 
             if (externalUrl) {
                 viewerUrl += `?model=${encodeURIComponent(externalUrl)}`;
             }
             updateQRCode(viewerUrl);
         }
+
 
 
         document.getElementById('btn-update-qr').addEventListener('click', () => updateDynamicQR());
