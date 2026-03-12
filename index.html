@@ -298,27 +298,27 @@
 
                     try {
                         const formData = new FormData();
-                        formData.append('file', blob, sessionStorage.getItem('modelName'));
+                        formData.append('file', blob);
 
-                        // Usando tmpfiles.org como provedor temporário (CORS amigável para demos)
-                        const response = await fetch('https://tmpfiles.org/api/v1/upload', {
+                        // Usando file.io (expira em 1 dia, excelente suporte a CORS para modelos 3D)
+                        const response = await fetch('https://file.io/?expires=1d', {
                             method: 'POST',
                             body: formData
                         });
 
                         const data = await response.json();
-                        if (data.status === 'success') {
-                            // Converte link de visualização em link direto de download
-                            const rawUrl = data.data.url.replace('https://tmpfiles.org/', 'https://tmpfiles.org/dl/');
+                        if (data.success) {
+                            const rawUrl = data.link;
                             updateDynamicQR(rawUrl);
 
-                            status.textContent = "✅ Sincronizado! Escaneie o QR Code atualizado.";
+                            status.textContent = "✅ Sincronizado! Link válido por 24h.";
                             status.style.color = "var(--primary)";
                             btn.textContent = "Modelo Sincronizado";
                         } else {
                             throw new Error("Falha no upload");
                         }
                     } catch (err) {
+
                         console.error(err);
                         status.textContent = "❌ Erro ao sincronizar. Tente novamente.";
                         btn.disabled = false;
