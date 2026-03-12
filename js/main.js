@@ -47,16 +47,22 @@ document.addEventListener('DOMContentLoaded', () => {
             if (blob) {
                 const modelName = sessionStorage.getItem('modelName') || 'modelo.glb';
                 const file = new File([blob], modelName, { type: "model/gltf-binary" });
-                handleFile(file);
+                handleFile(file, false); // Não adiciona ao histórico de novo
                 console.log("Sessão restaurada: ", modelName);
             }
         });
     }
+
+    renderHistory();
 });
 
-async function handleFile(file) {
+async function handleFile(file, shouldAddToHistory = true) {
     try {
         await saveModelToDB(file);
+        if (shouldAddToHistory) {
+            await addToHistory(file);
+            renderHistory();
+        }
         const url = URL.createObjectURL(file);
         sessionStorage.setItem('modelName', file.name);
         sessionStorage.setItem('hasCustomModel', 'true');
@@ -195,4 +201,54 @@ function initPreview(loadedModel) {
         renderer.render(scene, camera);
     }
     animate();
+}
+
+/**
+ * Renderiza a lista de arquivos recentes
+ */
+async function renderHistory() {
+    const listContainer = document.getElementById('recent-list');
+    const section = document.getElementById('recent-models-section');
+    if (!listContainer || !section) return;
+
+    const history = await getHistory();
+
+    if (history.length === 0) {
+        section.style.display = 'none';
+        return;
+    }
+
+    section.style.display = 'block';
+    listContainer.innerHTML = '';
+
+    history.forEach(item => {
+        const col = document.createElement('div');
+        col.className = 'col-md-4 col-lg-6'; // 2 por linha em telas grandes, 1 em médias
+
+        const sizeMB = (item.size / (1024 * 1024)).toFixed(1);
+        const date = new Date(item.timestamp).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+
+        col.innerHTML = `
+            <div class="stat-card d-flex align-items-center justify-content-between p-3" style="cursor: pointer; transition: all 0.3s ease;">
+                <div class="d-flex align-items-center">
+                    <div class="bg-primary text-white rounded-3 p-2 me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                    </div>
+                    <div style="max-width: 150px; overflow: hidden;">
+                        <p class="mb-0 fw-bold text-truncate" style="font-size: 0.9rem;">${item.name}</p>
+                        <p class="mb-0 text-muted" style="font-size: 0.75rem;">${sizeMB} MB • ${date}</p>
+                    </div>
+                </div>
+                <button class="btn btn-sm btn-outline-primary rounded-pill px-3 py-1" style="font-size: 0.7rem;">ABRIR</button>
+            </div>
+        `;
+
+        col.querySelector('.stat-card').addEventListener('click', () => {
+            const file = new File([item.blob], item.name, { type: "model/gltf-binary" });
+            handleFile(file, false); // Carrega sem re-adicionar ao histórico
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        listContainer.appendChild(col);
+    });
 }
