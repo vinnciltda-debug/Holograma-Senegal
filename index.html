@@ -114,41 +114,35 @@
 
             <div id="qr-section"
                 style="display: none; margin-top: 3rem; border-top: 1px solid var(--glass-border); padding-top: 2rem;">
-                <div class="qr-config"
-                    style="margin-bottom: 2rem; max-width: 400px; margin-left: auto; margin-right: auto;">
-                    <p style="font-size: 0.8rem; color: #888; margin-bottom: 1rem;">Para ver no celular, certifique-se
-                        que ambos estão no mesmo Wi-Fi e ajuste o IP abaixo se necessário:</p>
-                    <div style="display: flex; gap: 0.5rem;">
-                        <input type="text" id="ip-config" value="10.0.8.254:3000"
-                            style="background: var(--glass); border: 1px solid var(--glass-border); color: white; padding: 0.5rem 1rem; border-radius: 0.5rem; flex: 1; font-family: monospace;">
-                        <button class="btn btn-primary" id="btn-update-qr"
-                            style="padding: 0.5rem 1rem; font-size: 0.8rem;">Atualizar</button>
-                    </div>
-                </div>
-
-                <div class="qr-container"
-                    style="background: white; padding: 2rem; border-radius: 2rem; transform: none; box-shadow: 0 0 40px rgba(0,242,255,0.2);">
-                    <div id="qrcode" class="qr-code" style="margin-bottom: 0; padding:0;"></div>
-                    <div class="qr-label"
-                        style="color: black; margin-top: 1.5rem; font-size: 0.8rem; letter-spacing: 1px;">Escaneie para
-                        Projetar</div>
-                </div>
-
-                <div id="sync-container"
-                    style="margin-top: 2rem; max-width: 500px; margin-left: auto; margin-right: auto; padding: 1.5rem; background: rgba(0,242,255,0.05); border-radius: 1rem; border: 1px solid var(--primary);">
-                    <p style="font-size: 0.8rem; color: var(--primary); margin-bottom: 1rem; font-weight: 700;">🔄
-                        SINCRONIZAÇÃO INTELIGENTE</p>
-                    <p style="font-size: 0.75rem; color: #888; line-height: 1.4; margin-bottom: 1.5rem;">
-                        Deseja ver o modelo que você subiu agora no seu celular? Clique no botão abaixo para gerar um
-                        link temporário na nuvem.
-                    </p>
-                    <button class="btn btn-primary" id="btn-sync-cloud"
-                        style="width: 100%; padding: 0.8rem;">Sincronizar Modelo com Celular</button>
-                    <div id="sync-status" style="margin-top: 1rem; font-size: 0.7rem; color: #666; display: none;">
-                        Enviando modelo...</div>
+                <div style="display: none;">
+                    <input type="text" id="ip-config" value="">
+                    <button id="btn-update-qr"></button>
                 </div>
             </div>
-        </section>
+
+            <div class="qr-container"
+                style="background: white; padding: 2rem; border-radius: 2rem; transform: none; box-shadow: 0 0 40px rgba(0,242,255,0.2);">
+                <div id="qrcode" class="qr-code" style="margin-bottom: 0; padding:0;"></div>
+                <div class="qr-label" style="color: black; margin-top: 1.5rem; font-size: 0.8rem; letter-spacing: 1px;">
+                    Escaneie para
+                    Projetar</div>
+            </div>
+
+            <div id="sync-container"
+                style="margin-top: 2rem; max-width: 500px; margin-left: auto; margin-right: auto; padding: 1.5rem; background: rgba(0,242,255,0.05); border-radius: 1rem; border: 1px solid var(--primary);">
+                <p style="font-size: 0.8rem; color: var(--primary); margin-bottom: 1rem; font-weight: 700;">🔄
+                    SINCRONIZAÇÃO INTELIGENTE</p>
+                <p style="font-size: 0.75rem; color: #888; line-height: 1.4; margin-bottom: 1.5rem;">
+                    Deseja ver o modelo que você subiu agora no seu celular? Clique no botão abaixo para gerar um
+                    link temporário na nuvem.
+                </p>
+                <button class="btn btn-primary" id="btn-sync-cloud" style="width: 100%; padding: 0.8rem;">Sincronizar
+                    Modelo com Celular</button>
+                <div id="sync-status" style="margin-top: 1rem; font-size: 0.7rem; color: #666; display: none;">
+                    Enviando modelo...</div>
+            </div>
+    </div>
+    </section>
 
     </div>
 
@@ -254,11 +248,9 @@
                 // Live Preview logic
                 initPreview(model);
 
-                // Configura IP inicial se estiver em um servidor
+                // Detecta host automaticamente (Vercel ou Local)
                 const currentHost = window.location.host;
-                if (currentHost && !currentHost.includes('localhost') && !currentHost.includes('127.0.0.1')) {
-                    document.getElementById('ip-config').value = currentHost;
-                }
+                document.getElementById('ip-config').value = currentHost;
 
                 updateDynamicQR();
                 document.getElementById('qr-section').style.display = 'block';
@@ -266,8 +258,10 @@
         }
 
         async function updateDynamicQR(externalUrl = null) {
-            const host = document.getElementById('ip-config').value;
-            let viewerUrl = `http://${host}/viewer.html`;
+            const host = document.getElementById('ip-config').value || window.location.host;
+            const protocol = window.location.protocol;
+            let viewerUrl = `${protocol}//${host}/viewer.html`;
+
             if (externalUrl) {
                 viewerUrl += `?model=${encodeURIComponent(externalUrl)}`;
             }
