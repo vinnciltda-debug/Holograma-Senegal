@@ -11,23 +11,26 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
-  // Verificação de segurança para o Token
   if (!process.env.BLOB_READ_WRITE_TOKEN) {
-    return res.status(500).json({ error: 'TOKEN_NOT_FOUND: O Vercel Blob não está conectado ao seu projeto. Vá no painel da Vercel > Storage > Connect.' });
+    return res.status(500).json({ error: 'TOKEN_NOT_FOUND: Conecte o Blob ao projeto no painel da Vercel.' });
   }
 
   try {
     const filename = req.query.filename || 'modelo.glb';
 
+    // Tentando upload como public
     const blob = await put(filename, req, {
-      access: 'public',
+      access: 'public', // OBRIGATÓRIO para o QR Code funcionar
       token: process.env.BLOB_READ_WRITE_TOKEN
     });
 
     return res.status(200).json(blob);
   } catch (error) {
-    console.error('Erro detalhado:', error.message);
-    // Retornando o erro real da biblioteca da Vercel
-    return res.status(500).json({ error: `VERCEL_BLOB_ERROR: ${error.message}` });
+    if (error.message.includes('public access on a private store')) {
+      return res.status(500).json({
+        error: 'CONFIG_REQUIRED: Seu Blob está em modo PRIVADO. Mude para modo PÚBLICO no painel da Vercel (Storage > Blob > Settings) para que o QR Code funcione.'
+      });
+    }
+    return res.status(500).json({ error: `ERRO: ${error.message}` });
   }
 }
