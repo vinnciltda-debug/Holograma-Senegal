@@ -263,13 +263,15 @@
         async function updateDynamicQR(externalUrl = null) {
             const host = document.getElementById('ip-config').value || window.location.host;
             const protocol = window.location.protocol;
-            let viewerUrl = `${protocol}//${host}/viewer.html`;
+            // DIRETO PARA VR: Mudamos de viewer.html para vr.html
+            let viewerUrl = `${protocol}//${host}/vr.html`;
 
             if (externalUrl) {
                 viewerUrl += `?model=${encodeURIComponent(externalUrl)}`;
             }
             updateQRCode(viewerUrl);
         }
+
 
         document.getElementById('btn-update-qr').addEventListener('click', () => updateDynamicQR());
 
@@ -312,17 +314,21 @@
                             status.style.color = "var(--primary)";
                             btn.textContent = "Modelo Sincronizado";
                         } else {
-                            throw new Error(data.error || "Falha no upload");
+                            // MOSTRAR ERRO REAL PARA DIAGNÓSTICO
+                            const errorMsg = data.error || "Erro desconhecido";
+                            status.textContent = "❌ Erro: " + errorMsg;
+                            status.style.color = "#ff4444";
+                            console.error("Erro Vercel:", errorMsg);
+                            throw new Error(errorMsg);
                         }
                     } catch (err) {
-
-
-
-                        console.error(err);
-                        status.textContent = "❌ Erro ao sincronizar. Tente novamente.";
+                        if (!status.textContent.includes("❌")) {
+                            status.textContent = "❌ Falha conexão. Verifique o painel Vercel.";
+                        }
                         btn.disabled = false;
-                        btn.textContent = "Sincronizar Modelo com Celular";
+                        btn.textContent = "Tentar Sincronizar Novamente";
                     }
+
                 };
             };
         });
