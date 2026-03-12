@@ -223,30 +223,47 @@ async function renderHistory() {
 
     history.forEach(item => {
         const col = document.createElement('div');
-        col.className = 'col-md-4 col-lg-6'; // 2 por linha em telas grandes, 1 em médias
+        col.className = 'col-md-6 col-lg-6'; // 2 por linha em telas médias/grandes
 
         const sizeMB = (item.size / (1024 * 1024)).toFixed(1);
-        const date = new Date(item.timestamp).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
 
         col.innerHTML = `
-            <div class="stat-card d-flex align-items-center justify-content-between p-3" style="cursor: pointer; transition: all 0.3s ease;">
-                <div class="d-flex align-items-center">
-                    <div class="bg-primary text-white rounded-3 p-2 me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+            <div class="stat-card d-flex align-items-center justify-content-between p-3" style="transition: all 0.3s ease; border: 1px solid rgba(0,0,0,0.05);">
+                <div class="d-flex align-items-center flex-grow-1" style="cursor: pointer;">
+                    <div class="bg-primary text-white rounded-3 p-2 me-3" style="width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
                     </div>
-                    <div style="max-width: 150px; overflow: hidden;">
-                        <p class="mb-0 fw-bold text-truncate" style="font-size: 0.9rem;">${item.name}</p>
-                        <p class="mb-0 text-muted" style="font-size: 0.75rem;">${sizeMB} MB • ${date}</p>
+                    <div style="max-width: 140px; overflow: hidden;">
+                        <p class="mb-0 fw-bold text-truncate" style="font-size: 0.85rem;">${item.name}</p>
+                        <p class="mb-0 text-muted" style="font-size: 0.75rem;">${sizeMB} MB</p>
                     </div>
                 </div>
-                <button class="btn btn-sm btn-outline-primary rounded-pill px-3 py-1" style="font-size: 0.7rem;">ABRIR</button>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-sm btn-outline-primary rounded-pill px-3 py-1 btn-open" style="font-size: 0.7rem; font-weight: 700;">ABRIR</button>
+                    <button class="btn btn-sm btn-outline-danger rounded-circle p-1 d-flex align-items-center justify-content-center btn-delete" style="width: 28px; height: 28px;" title="Remover do arsenal">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    </button>
+                </div>
             </div>
         `;
 
-        col.querySelector('.stat-card').addEventListener('click', () => {
+        // Lógica de abrir
+        const openAction = () => {
             const file = new File([item.blob], item.name, { type: "model/gltf-binary" });
-            handleFile(file, false); // Carrega sem re-adicionar ao histórico
+            handleFile(file, false);
             window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        col.querySelector('.flex-grow-1').addEventListener('click', openAction);
+        col.querySelector('.btn-open').addEventListener('click', openAction);
+
+        // Lógica de excluir
+        col.querySelector('.btn-delete').addEventListener('click', async (e) => {
+            e.stopPropagation();
+            if (confirm(`Remover "${item.name}" do seu arsenal?`)) {
+                await deleteFromHistory(item.id);
+                renderHistory();
+            }
         });
 
         listContainer.appendChild(col);

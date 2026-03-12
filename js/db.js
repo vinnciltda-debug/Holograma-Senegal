@@ -51,12 +51,12 @@ async function getModelFromDB() {
 }
 
 /**
- * Adiciona ao histórico e mantém limite de 5
+ * Adiciona ao arsenal (antes histórico) e mantém até 50 itens
  */
 async function addToHistory(file) {
     const db = await openDB();
 
-    // 1. Pegar histórico atual
+    // 1. Pegar arsenal atual
     const history = await getHistory();
 
     // 2. Se já existe um com o mesmo nome, remove o antigo para não duplicar
@@ -75,10 +75,9 @@ async function addToHistory(file) {
         timestamp: Date.now()
     });
 
-    // 4. Limpar se passar de 5
+    // 4. Limite de segurança auto-gerenciado muito maior (50 itens)
     const updatedHistory = await getHistory();
-    if (updatedHistory.length > 5) {
-        // Ordena por data e remove o mais antigo (index 0 após sort)
+    if (updatedHistory.length > 50) {
         updatedHistory.sort((a, b) => a.timestamp - b.timestamp);
         await deleteFromHistory(updatedHistory[0].id);
     }
