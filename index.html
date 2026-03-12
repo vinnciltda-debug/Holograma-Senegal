@@ -292,26 +292,28 @@
 
                     try {
                         const formData = new FormData();
-                        formData.append('file', blob);
+                        formData.append('file', blob, sessionStorage.getItem('modelName'));
 
-                        // Usando file.io (expira em 1 dia, excelente suporte a CORS para modelos 3D)
-                        const response = await fetch('https://file.io/?expires=1d', {
+                        // Chamando nossa nova API da Vercel para o Blob Storage
+                        const response = await fetch('/api/upload', {
                             method: 'POST',
                             body: formData
                         });
 
                         const data = await response.json();
-                        if (data.success) {
-                            const rawUrl = data.link;
+                        if (response.ok && data.url) {
+                            const rawUrl = data.url;
                             updateDynamicQR(rawUrl);
 
-                            status.textContent = "✅ Sincronizado! Link válido por 24h.";
+                            status.textContent = "✅ Sincronizado com Vercel Blob!";
                             status.style.color = "var(--primary)";
                             btn.textContent = "Modelo Sincronizado";
+                            console.log("Vercel Blob URL:", rawUrl);
                         } else {
-                            throw new Error("Falha no upload");
+                            throw new Error(data.error || "Falha no upload");
                         }
                     } catch (err) {
+
 
                         console.error(err);
                         status.textContent = "❌ Erro ao sincronizar. Tente novamente.";

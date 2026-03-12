@@ -1,0 +1,7 @@
+{
+  "name": "holografix-ai",
+  "version": "1.0.0",
+  "dependencies": {
+    "@vercel/blob": "^0.22.1"
+  }
+}
