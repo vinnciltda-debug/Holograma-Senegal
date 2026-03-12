@@ -1,9 +1,8 @@
 import { put } from '@vercel/blob';
 
-// Configuração CRÍTICA para que a Vercel aceite o arquivo sem corromper
 export const config = {
   api: {
-    bodyParser: false, // Desliga o processamento automático para aceitar o "bruto" (stream)
+    bodyParser: false,
   },
 };
 
@@ -12,10 +11,14 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
-  try {
-    const filename = req.query.filename || 'modelo-google.glb';
+  // Verificação de segurança para o Token
+  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    return res.status(500).json({ error: 'TOKEN_NOT_FOUND: O Vercel Blob não está conectado ao seu projeto. Vá no painel da Vercel > Storage > Connect.' });
+  }
 
-    // O Vercel Blob consome o stream diretamente aqui
+  try {
+    const filename = req.query.filename || 'modelo.glb';
+
     const blob = await put(filename, req, {
       access: 'public',
       token: process.env.BLOB_READ_WRITE_TOKEN
@@ -23,7 +26,8 @@ export default async function handler(req, res) {
 
     return res.status(200).json(blob);
   } catch (error) {
-    console.error('Erro no upload Vercel:', error);
-    return res.status(500).json({ error: 'Falha no servidor Vercel' });
+    console.error('Erro detalhado:', error.message);
+    // Retornando o erro real da biblioteca da Vercel
+    return res.status(500).json({ error: `VERCEL_BLOB_ERROR: ${error.message}` });
   }
 }
