@@ -180,7 +180,9 @@
         const fileInput = document.getElementById('file-input');
         const uploadPanel = document.getElementById('upload-panel');
         const analysisCard = document.getElementById('analysis-card');
-        const loader = new GLTFLoader();
+
+        // CORREÇÃO: Usando THREE.GLTFLoader para compatibilidade
+        const loader = new THREE.GLTFLoader();
 
         // Drag & Drop events
         dropZone.addEventListener('dragover', (e) => {
@@ -207,41 +209,51 @@
         });
 
         async function handleFile(file) {
-            await saveModelToDB(file);
-            const url = URL.createObjectURL(file);
-            sessionStorage.setItem('modelName', file.name);
-            sessionStorage.setItem('hasCustomModel', 'true');
+            try {
+                await saveModelToDB(file);
+                const url = URL.createObjectURL(file);
+                sessionStorage.setItem('modelName', file.name);
+                sessionStorage.setItem('hasCustomModel', 'true');
 
-            uploadPanel.style.display = 'none';
-            analysisCard.style.display = 'block';
-            document.getElementById('btn-reset-top').style.display = 'block';
-            document.getElementById('model-name').textContent = file.name;
-            document.getElementById('model-size').textContent = (file.size / (1024 * 1024)).toFixed(2) + ' MB';
+                uploadPanel.style.display = 'none';
+                analysisCard.style.display = 'block';
+                document.getElementById('btn-reset-top').style.display = 'block';
+                document.getElementById('model-name').textContent = file.name;
+                document.getElementById('model-size').textContent = (file.size / (1024 * 1024)).toFixed(2) + ' MB';
 
-            loader.load(url, (gltf) => {
-                const model = gltf.scene;
-                let vertices = 0, triangles = 0;
+                loader.load(url, (gltf) => {
+                    const model = gltf.scene;
+                    let vertices = 0, triangles = 0;
 
-                model.traverse((node) => {
-                    if (node.isMesh) {
-                        const geometry = node.geometry;
-                        vertices += geometry.attributes.position.count;
-                        triangles += geometry.index ? geometry.index.count / 3 : geometry.attributes.position.count / 3;
-                    }
+                    model.traverse((node) => {
+                        if (node.isMesh) {
+                            const geometry = node.geometry;
+                            vertices += geometry.attributes.position.count;
+                            triangles += geometry.index ? geometry.index.count / 3 : geometry.attributes.position.count / 3;
+                        }
+                    });
+
+                    document.getElementById('poly-count').textContent = Math.round(triangles).toLocaleString();
+                    document.getElementById('vert-count').textContent = vertices.toLocaleString();
+                    document.getElementById('anim-count').textContent = gltf.animations.length;
+
+                    initPreview(model);
+
+                    const currentHost = window.location.host;
+                    document.getElementById('ip-config').value = currentHost;
+                    updateDynamicQR();
+                    document.getElementById('qr-section').style.display = 'block';
+                }, undefined, (err) => {
+                    console.error("Three.js Load Error:", err);
+                    alert("Erro ao carregar o modelo 3D no preview.");
+                    resetAll();
                 });
-
-                document.getElementById('poly-count').textContent = Math.round(triangles).toLocaleString();
-                document.getElementById('vert-count').textContent = vertices.toLocaleString();
-                document.getElementById('anim-count').textContent = gltf.animations.length;
-
-                initPreview(model);
-
-                const currentHost = window.location.host;
-                document.getElementById('ip-config').value = currentHost;
-                updateDynamicQR();
-                document.getElementById('qr-section').style.display = 'block';
-            });
+            } catch (err) {
+                console.error("HandleFile Error:", err);
+                alert("Ocorreu um erro ao processar seu arquivo.");
+            }
         }
+
 
         async function updateDynamicQR(externalUrl = null) {
             const host = document.getElementById('ip-config').value || window.location.host;
