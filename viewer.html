@@ -22,14 +22,15 @@
 
         .viewer-container {
             width: 95%;
-            max-width: 800px;
+            max-width: 900px;
             height: 75vh;
-            background: white;
-            border-radius: 2.5rem;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            border-radius: 3rem;
             position: relative;
             overflow: hidden;
-            box-shadow: var(--shadow-premium);
-            border: 1px solid white;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.8);
         }
 
         model-viewer {
