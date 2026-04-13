@@ -112,7 +112,9 @@ async function deleteFromHistory(id) {
  * Limpa o banco de dados e reinicia a sessão
  */
 async function resetAll() {
+    localStorage.clear();
     sessionStorage.clear();
+
     const db = await openDB();
     const transaction = db.transaction([STORE_NAME, HISTORY_STORE], 'readwrite');
     transaction.objectStore(STORE_NAME).clear();

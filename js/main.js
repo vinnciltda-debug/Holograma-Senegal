@@ -1,60 +1,61 @@
 // Dependências: THREE, GLTFLoader (via THREE.GLTFLoader), QRCode
 const loader = new THREE.GLTFLoader();
 
+let currentAnimationId = null;
+let currentRenderer = null;
+
 document.addEventListener('DOMContentLoaded', () => {
-    const dropZone = document.getElementById('drop-zone');
-    const fileInput = document.getElementById('file-input');
-    const uploadPanel = document.getElementById('upload-panel');
     const analysisCard = document.getElementById('analysis-card');
-
-    if (!dropZone) return;
-
-    // Drag & Drop events
-    dropZone.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        dropZone.classList.add('dragover');
-    });
-
-    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
-
-    dropZone.addEventListener('drop', (e) => {
-        e.preventDefault();
-        dropZone.classList.remove('dragover');
-        const file = e.dataTransfer.files[0];
-        if (file && file.name.toLowerCase().endsWith('.glb')) {
-            handleFile(file);
-        } else {
-            alert('Por favor, suba apenas arquivos .GLB');
-        }
-    });
-
-    if (fileInput) {
-        fileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) handleFile(file);
-        });
-    }
 
     // Reset Buttons
     const btnReset = document.getElementById('btn-reset');
     const btnResetTop = document.getElementById('btn-reset-top');
-    if (btnReset) btnReset.addEventListener('click', resetAll);
-    if (btnResetTop) btnResetTop.addEventListener('click', resetAll);
+    if (btnReset) btnReset.addEventListener('click', () => {
+        localStorage.removeItem('hasCustomModel');
+        localStorage.removeItem('modelName');
+        localStorage.removeItem('syncedModelUrl');
+        window.location.reload();
+    });
 
     // Verificação inicial: Se já existe um modelo no banco, carrega ele automaticamente
-    if (sessionStorage.getItem('hasCustomModel')) {
+    if (localStorage.getItem('hasCustomModel')) {
+        const modelName = localStorage.getItem('modelName') || 'modelo.glb';
+        const syncedUrl = localStorage.getItem('syncedModelUrl');
+        
         getModelFromDB().then(blob => {
             if (blob) {
-                const modelName = sessionStorage.getItem('modelName') || 'modelo.glb';
                 const file = new File([blob], modelName, { type: "model/gltf-binary" });
-                handleFile(file, false); // Não adiciona ao histórico de novo
-                console.log("Sessão restaurada: ", modelName);
+                handleFile(file, false);
+                if (syncedUrl) updateDynamicQR(syncedUrl);
             }
         });
     }
-
-    renderHistory();
 });
+
+/**
+ * Carrega um modelo do catálogo local
+ */
+async function loadCatalogModel(path, name) {
+    try {
+        const response = await fetch(path);
+        const blob = await response.blob();
+        const file = new File([blob], name, { type: 'model/gltf-binary' });
+        
+        // Limpar URL sincronizado antigo ao carregar um novo do catálogo
+        localStorage.removeItem('syncedModelUrl');
+        
+        await handleFile(file);
+        
+        // Scroll suave para o card de análise
+        document.getElementById('analysis-card').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } catch (err) {
+        console.error("Erro ao carregar modelo do catálogo:", err);
+        alert("Erro ao carregar o modelo selecionado.");
+    }
+}
+
+
+
 
 async function handleFile(file, shouldAddToHistory = true) {
     try {
@@ -64,14 +65,14 @@ async function handleFile(file, shouldAddToHistory = true) {
             renderHistory();
         }
         const url = URL.createObjectURL(file);
-        sessionStorage.setItem('modelName', file.name);
-        sessionStorage.setItem('hasCustomModel', 'true');
+        localStorage.setItem('modelName', file.name);
+        localStorage.setItem('hasCustomModel', 'true');
 
-        document.getElementById('upload-panel').style.display = 'none';
+
         document.getElementById('analysis-card').style.display = 'block';
-        document.getElementById('btn-reset-top').style.display = 'block';
         document.getElementById('model-name').textContent = file.name;
         document.getElementById('model-size').textContent = (file.size / (1024 * 1024)).toFixed(2) + ' MB';
+
 
         loader.load(url, (gltf) => {
             const model = gltf.scene;
@@ -109,8 +110,18 @@ async function handleFile(file, shouldAddToHistory = true) {
 async function updateDynamicQR(externalUrl = null) {
     const host = document.getElementById('ip-config')?.value || window.location.host;
     const protocol = window.location.protocol;
+    
+    // Atualiza links de modo para incluir o parâmetro de modelo se houver externalUrl
+    const urlParams = externalUrl ? `?model=${encodeURIComponent(externalUrl)}` : '';
+    
+    document.querySelectorAll('a[href^="pyramid.html"], a[href^="vr.html"], a[href^="viewer.html"]').forEach(link => {
+        const base = link.getAttribute('href').split('?')[0];
+        link.setAttribute('href', base + urlParams);
+    });
+
     let viewerUrl = `${protocol}//${host}/viewer.html?minimal=1`;
     if (externalUrl) viewerUrl += `&model=${encodeURIComponent(externalUrl)}`;
+
 
     const qrDiv = document.getElementById('qrcode');
     if (!qrDiv) return;
@@ -150,6 +161,7 @@ if (btnSync) {
             const data = await response.json();
             if (response.ok && data.url) {
                 updateDynamicQR(data.url);
+                localStorage.setItem('syncedModelUrl', data.url);
                 status.textContent = "✅ Sincronizado com Vercel Blob!";
                 status.className = "alert alert-success py-2 small";
                 btnSync.textContent = "Modelo Sincronizado";
@@ -168,15 +180,28 @@ if (btnSync) {
 function initPreview(loadedModel) {
     const container = document.getElementById('model-preview');
     if (!container) return;
+
+    // Limpeza rigorosa para evitar vazamento de memória e limites de WebGL
+    if (currentAnimationId) {
+        cancelAnimationFrame(currentAnimationId);
+    }
+    if (currentRenderer) {
+        currentRenderer.dispose();
+        if (currentRenderer.domElement && currentRenderer.domElement.parentNode) {
+            currentRenderer.domElement.parentNode.removeChild(currentRenderer.domElement);
+        }
+    }
+    
     container.innerHTML = '';
 
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0xf1f5f9);
     const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(container.clientWidth, container.clientHeight);
-    renderer.setPixelRatio(window.devicePixelRatio);
-    container.appendChild(renderer.domElement);
+    
+    currentRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    currentRenderer.setSize(container.clientWidth, container.clientHeight);
+    currentRenderer.setPixelRatio(window.devicePixelRatio);
+    container.appendChild(currentRenderer.domElement);
 
     const ambientLight = new THREE.AmbientLight(0xffffff, 1);
     scene.add(ambientLight);
@@ -196,9 +221,9 @@ function initPreview(loadedModel) {
     camera.position.z = 8;
 
     function animate() {
-        requestAnimationFrame(animate);
+        currentAnimationId = requestAnimationFrame(animate);
         loadedModel.rotation.y += 0.005;
-        renderer.render(scene, camera);
+        if (currentRenderer) currentRenderer.render(scene, camera);
     }
     animate();
 }

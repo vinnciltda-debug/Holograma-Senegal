@@ -20,7 +20,8 @@ async function init() {
     // Load model logic
     const urlParams = new URLSearchParams(window.location.search);
     const externalUrl = urlParams.get('model');
-    const hasCustom = sessionStorage.getItem('hasCustomModel');
+    const hasCustom = localStorage.getItem('hasCustomModel');
+
     const defaultModel = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
 
     if (externalUrl) {

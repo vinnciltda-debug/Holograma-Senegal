@@ -21,12 +21,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (externalUrl) {
             modelViewer.src = externalUrl;
             if (titleText) titleText.textContent = "Modelo Remoto";
-        } else if (sessionStorage.getItem('hasCustomModel')) {
+        } else if (localStorage.getItem('hasCustomModel')) {
+
             // getModelFromDB() vem do js/db.js
             const blob = await getModelFromDB();
             if (blob) {
                 modelViewer.src = URL.createObjectURL(blob);
-                if (titleText) titleText.textContent = sessionStorage.getItem('modelName') || "Análise Ativa";
+                if (titleText) titleText.textContent = localStorage.getItem('modelName') || "Análise Ativa";
+
             }
         } else {
             if (titleText) titleText.textContent = "Astronauta (Padrão)";
