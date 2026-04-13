@@ -1,40 +1,23 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800;900&display=swap');
-
 :root {
-  /* Vibrant Senegal Flag Palette (Refined) */
+  /* Clean Senegal Palette */
   --sn-green: #00df67;
   --sn-yellow: #ffdf00;
   --sn-red: #ff4d4d;
-  
-  /* Neutral Dark Theme for Legibility */
-  --bg-deep: #050505;
-  --bg-primary: #0f0f0f;
-  --bg-secondary: #1a1a1a;
-  --bg-accent: rgba(0, 223, 103, 0.05);
-
-  /* Glassmorphism Refined */
-  --glass-bg: rgba(15, 15, 15, 0.85);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --glass-blur: 24px;
-
-  /* UI Tokens */
-  --primary-gradient: linear-gradient(90deg, var(--sn-green), var(--sn-yellow));
-  --text-main: #ffffff;
-  --text-secondary: #aaaaaa;
-  --text-muted: #666666;
-
-  --radius-xl: 30px;
-  --transition-base: 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 body {
-    background-color: var(--bg-deep);
-    color: var(--text-main);
+    background-color: #000000;
+    color: #ffffff;
     font-family: 'Inter', -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     min-height: 100vh;
     overflow-x: hidden;
 }
+
+.bg-shape {
+    display: none;
+}
+
 
 
 
@@ -75,14 +58,14 @@ h3,
 
 /* --- Navbar --- */
 .navbar {
-    padding: 1.5rem 0;
-    background: rgba(10, 14, 10, 0.8);
-    backdrop-filter: blur(16px);
-    border-bottom: 1px solid var(--border-subtle, rgba(0, 133, 63, 0.1));
+    padding: 1rem 0;
+    background: #000000;
+    border-bottom: 1px solid #1a1a1a;
     position: sticky;
     top: 0;
     z-index: 1000;
 }
+
 
 
 .navbar-brand {
@@ -112,12 +95,10 @@ h3,
 }
 
 .hero-gradient-text {
-    background: linear-gradient(90deg, var(--sn-green), var(--sn-yellow), var(--sn-red));
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    font-weight: 900;
+    color: var(--sn-green);
+    font-weight: 800;
 }
+
 
 
 
@@ -195,18 +176,17 @@ h3,
 }
 
 .badge-model {
-    background: var(--glass-bg);
-    color: var(--sn-yellow);
-    padding: 0.6rem 1.25rem;
-    border-radius: 100px;
-    font-size: 0.7rem;
-    font-weight: 800;
-    letter-spacing: 1.5px;
+    background: #111111;
+    color: #ffffff;
+    padding: 0.4rem 1rem;
+    border-radius: 8px;
+    font-size: 0.6rem;
+    font-weight: 600;
     text-transform: uppercase;
-    display: inline-block;
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--shadow-glow-yellow);
+    letter-spacing: 1px;
+    border: 1px solid #222222;
 }
+
 
 
 .stat-card {
@@ -366,20 +346,19 @@ h3,
 }
 
 .catalog-card {
-    background: var(--bg-primary);
-    border: 1px solid var(--glass-border);
-    border-radius: 2rem;
+    background: #0a0a0a;
+    border: 1px solid #1a1a1a;
+    border-radius: 16px;
     overflow: hidden;
     cursor: pointer;
-    transition: all 0.4s var(--transition-base);
-    position: relative;
+    transition: all 0.3s ease;
 }
 
 .catalog-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 15px 35px rgba(0, 223, 103, 0.15);
     border-color: var(--sn-green);
+    transform: translateY(-4px);
 }
+
 
 
 
@@ -435,12 +414,12 @@ h3,
 }
 
 .catalog-tag {
-    font-size: 0.65rem;
-    font-weight: 800;
+    font-size: 0.6rem;
+    font-weight: 700;
     color: var(--sn-green);
     text-transform: uppercase;
-    letter-spacing: 1px;
 }
+
 
 
 
