@@ -48,10 +48,22 @@ function openModernViewer(path, name, tag) {
 
     const progressBar = document.querySelector('.update-bar');
     
-    viewer.addEventListener('progress', (event) => {
+    const progressContainer = document.querySelector('.progress-bar-container');
+    if (progressContainer) progressContainer.style.display = 'block';
+
+    const onProgress = (event) => {
         const progress = event.detail.totalProgress * 100;
-        progressBar.style.width = `${progress}%`;
-    });
+        if (progressBar) progressBar.style.width = `${progress}%`;
+    };
+
+    const onLoad = () => {
+        if (progressContainer) progressContainer.style.display = 'none';
+        viewer.removeEventListener('progress', onProgress);
+        viewer.removeEventListener('load', onLoad);
+    };
+
+    viewer.addEventListener('progress', onProgress);
+    viewer.addEventListener('load', onLoad);
 
     viewer.src = path;
     overlay.style.display = 'flex';

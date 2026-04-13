@@ -464,7 +464,7 @@ h3,
 
 /* Progress Bar */
 .progress-bar-container {
-    display: block;
+    display: none;
     width: 60%;
     height: 4px;
     background: rgba(0, 0, 0, 0.1);
