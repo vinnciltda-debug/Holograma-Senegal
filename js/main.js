@@ -46,10 +46,18 @@ function openModernViewer(path, name, tag) {
     document.getElementById('link-holograma').href = `pyramid.html?model=${encodeURIComponent(window.location.origin + '/' + path)}`;
     document.getElementById('link-vr').href = `vr.html?model=${encodeURIComponent(window.location.origin + '/' + path)}`;
 
+    const progressBar = document.querySelector('.update-bar');
+    
+    viewer.addEventListener('progress', (event) => {
+        const progress = event.detail.totalProgress * 100;
+        progressBar.style.width = `${progress}%`;
+    });
+
     viewer.src = path;
     overlay.style.display = 'flex';
     document.body.style.overflow = 'hidden'; // Trava scroll do fundo
 }
+
 
 function closeModernViewer() {
     const overlay = document.getElementById('modern-viewer-overlay');

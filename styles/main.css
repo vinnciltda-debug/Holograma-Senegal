@@ -1,30 +1,31 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800;900&display=swap');
 
 :root {
-  /* Vibrant Senegal Flag Palette */
-  --sn-green: #00df67;
-  --sn-yellow: #ffdf00;
-  --sn-red: #ff4d4d;
+  /* Softened Senegal Flag Palette */
+  --sn-green: #10b981;
+  --sn-yellow: #f59e0b;
+  --sn-red: #ef4444;
   
-  /* Light Premium Theme */
-  --bg-deep: #f8fafc;
+  /* Airy Premium Theme */
+  --bg-deep: #f9fafb;
   --bg-primary: #ffffff;
-  --bg-secondary: #f1f5f9;
+  --bg-secondary: #f3f4f6;
   
-  /* Text */
-  --text-main: #0f172a;
-  --text-secondary: #475569;
-  --text-muted: #94a3b8;
+  /* Soft Text */
+  --text-main: #1f2937;
+  --text-secondary: #4b5563;
+  --text-muted: #9ca3af;
 
-  /* Glassmorphism on Light */
-  --glass-bg: rgba(255, 255, 255, 0.8);
-  --glass-border: rgba(0, 0, 0, 0.05);
-  --glass-blur: 16px;
+  /* Glassmorphism Refined */
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.4);
+  --glass-blur: 20px;
 
   /* UI Tokens */
-  --primary-gradient: linear-gradient(90deg, var(--sn-green), var(--sn-yellow));
-  --shadow-premium: 0 10px 30px rgba(0, 0, 0, 0.04);
-  --transition-base: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  --primary-gradient: linear-gradient(135deg, var(--sn-green), #34d399);
+  --shadow-premium: 0 20px 40px rgba(0, 0, 0, 0.03);
+  --shadow-soft: 0 10px 20px rgba(0, 0, 0, 0.02);
+  --transition-base: 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 body {
@@ -50,9 +51,9 @@ h3,
 .bg-shape {
     position: fixed;
     z-index: -1;
-    filter: blur(120px);
+    filter: blur(140px);
     border-radius: 50%;
-    opacity: 0.1;
+    opacity: 0.04;
 }
 
 .shape-1 {
@@ -76,10 +77,11 @@ h3,
 
 /* --- Navbar --- */
 .navbar {
-    padding: 1.5rem 0;
-    background: rgba(10, 14, 10, 0.8);
-    backdrop-filter: blur(16px);
-    border-bottom: 1px solid var(--border-subtle, rgba(0, 133, 63, 0.1));
+    padding: 1.2rem 0;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.03);
     position: sticky;
     top: 0;
     z-index: 1000;
@@ -87,13 +89,13 @@ h3,
 
 
 .navbar-brand {
-    font-size: 1.6rem;
-    font-weight: 900;
-    background: linear-gradient(135deg, var(--sn-yellow), var(--sn-green-soft));
+    font-size: 1.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--sn-green), var(--sn-yellow));
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
-    letter-spacing: -0.5px;
+    letter-spacing: -1px;
 }
 
 
@@ -123,11 +125,12 @@ h3,
 
 
 .hero-subtitle {
-    font-size: 1.3rem;
-    color: var(--text-muted);
-    max-width: 650px;
-    margin: 0 auto 3.5rem;
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin: 0 auto 3rem;
     line-height: 1.6;
+    letter-spacing: -0.2px;
 }
 
 /* --- Cards --- */
@@ -198,15 +201,15 @@ h3,
 .badge-model {
     background: #ffffff;
     color: var(--sn-green);
-    padding: 0.6rem 1.25rem;
+    padding: 0.5rem 1rem;
     border-radius: 100px;
-    font-size: 0.7rem;
-    font-weight: 800;
-    letter-spacing: 1px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
     text-transform: uppercase;
     display: inline-block;
-    border: 1px solid rgba(0, 0, 0, 0.05);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.02);
 }
 
 
@@ -258,16 +261,15 @@ h3,
     background: var(--primary-gradient);
     color: white !important;
     border: none;
-    padding: 0.8rem 2.2rem;
+    padding: 0.8rem 2rem;
     border-radius: 100px;
-    /* Pill shape is more organic */
     font-weight: 600;
     text-decoration: none !important;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-    box-shadow: 0 8px 20px -6px rgba(99, 102, 241, 0.5);
+    transition: all 0.4s var(--transition-base);
+    box-shadow: 0 8px 25px -5px rgba(16, 185, 129, 0.3);
     position: relative;
     z-index: 1;
 }
@@ -409,13 +411,13 @@ h3,
     content: 'CLIQUE PARA ANALISAR';
     position: absolute;
     inset: 0;
-    background: rgba(0, 133, 63, 0.85);
+    background: rgba(16, 185, 129, 0.9);
     color: white;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 800;
-    font-size: 0.75rem;
+    font-weight: 700;
+    font-size: 0.7rem;
     letter-spacing: 1px;
     opacity: 0;
     transition: opacity 0.3s ease;
@@ -453,20 +455,65 @@ h3,
 .modern-viewer-overlay {
     position: fixed;
     inset: 0;
-    background: #f8fafc;
+    background: #ffffff;
     z-index: 2010;
     display: none;
     flex-direction: column;
     animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* Progress Bar */
+.progress-bar-container {
+    display: block;
+    width: 60%;
+    height: 4px;
+    background: rgba(0, 0, 0, 0.1);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 10px;
+    overflow: hidden;
+}
 
+.update-bar {
+    background: var(--sn-green);
+    width: 0%;
+    height: 100%;
+    transition: width 0.3s;
+}
 
+/* User Hint */
+.viewer-hint {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.9);
+    padding: 8px 16px;
+    border-radius: 99px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    pointer-events: none;
+    animation: fadeInOut 4s infinite;
+    white-space: nowrap;
+}
+
+@keyframes fadeInOut {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 1; }
+}
 
 @keyframes slideUp {
     from { transform: translateY(100%); }
     to { transform: translateY(0); }
 }
+
 
 .btn-close-viewer {
     position: absolute;
@@ -520,15 +567,16 @@ h3,
     background: var(--primary-gradient);
     color: white;
     border: none;
-    padding: 1.2rem;
-    border-radius: 1.5rem;
-    font-weight: 800;
-    font-size: 1rem;
+    padding: 1.1rem;
+    border-radius: 1.2rem;
+    font-weight: 700;
+    font-size: 0.95rem;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 12px;
-    box-shadow: 0 10px 25px rgba(0, 133, 63, 0.3);
+    box-shadow: 0 12px 30px rgba(16, 185, 129, 0.25);
+    transition: all 0.3s ease;
 }
 
 
