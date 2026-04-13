@@ -12,9 +12,11 @@
     <!-- Google Fonts -->
     <link rel="stylesheet" href="styles/main.css">
     <!-- Scripts Externos -->
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
 </head>
 
 <body>
@@ -33,11 +35,12 @@
 
 
     <!-- Hero Section -->
-    <section class="hero-section container">
+    <section class="container mt-4 mb-5">
         <div class="fade-in-up">
-            <h1 class="hero-title">Patrimônio em <span class="hero-gradient-text">Nova Dimensão</span></h1>
-            <p class="hero-subtitle">Explore a rica herança cultural do Senegal através de projeções 3D em Holograma, VR ou Realidade Aumentada.</p>
+            <h1 class="h2 font-heading fw-900 mb-1">Explorar <span class="hero-gradient-text">Senegal</span></h1>
+            <p class="text-muted small">Toque em um item para visualizar em 3D</p>
         </div>
+
 
 
         <div class="row justify-content-center">
@@ -100,94 +103,44 @@
                 </div>
 
 
-                <!-- Analysis Card -->
-                <div class="premium-card fade-in-up" id="analysis-card" style="display: none;">
-                    <div class="analysis-header">
-                        <div>
-                            <span class="badge-model">MODELO ATIVO</span>
-                            <h2 class="mt-2 mb-0 h4 font-heading text-uppercase" id="model-name">NOME_DO_ARQUIVO.GLB
-                            </h2>
-                        </div>
-                        <button class="btn-icon" id="btn-reset" title="Remover modelo">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
-                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round">
-                                <path d="M3 6h18" />
-                                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-                                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-                                <line x1="10" y1="11" x2="10" y2="17" />
-                                <line x1="14" y1="11" x2="14" y2="17" />
-                            </svg>
+                <!-- Modern Fullscreen Viewer (Hidden by default) -->
+                <div id="modern-viewer-overlay" class="modern-viewer-overlay">
+                    <button class="btn-close-viewer" onclick="closeModernViewer()">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>
+                    
+                    <div class="viewer-header">
+                        <span id="v-tag" class="catalog-tag">TAG</span>
+                        <h2 id="v-name" class="h4 mb-0 font-heading">NOME DO MODELO</h2>
+                    </div>
+
+                    <div class="viewer-content">
+                        <model-viewer id="main-model-viewer"
+                            camera-controls
+                            auto-rotate
+                            shadow-intensity="1"
+                            exposure="1"
+                            ar
+                            ar-modes="webxr scene-viewer quick-look"
+                            ar-placement="floor"
+                            touch-action="pan-y">
+                        </model-viewer>
+                    </div>
+
+                    <div class="viewer-actions-bar">
+                        <button class="btn-action-main" onclick="triggerAR()">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 6V4H4V7H6"/><path d="M17 6V4H20V7H18"/><path d="M7 18V20H4V17H6"/><path d="M17 18V20H20V17H18"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+                            COLOCAR NA VIDA REAL
                         </button>
-                    </div>
-
-                    <!-- 3D Preview -->
-                    <div class="preview-window" id="model-preview">
-                        <div class="position-absolute top-50 start-50 translate-middle text-muted">
-                            <div class="spinner-border spinner-border-sm" role="status"></div> Gerando Preview...
-                        </div>
-                    </div>
-
-                    <!-- Stats Grid -->
-                    <div class="row g-3 mb-4">
-                        <div class="col-6 col-md-3">
-                            <div class="stat-card">
-                                <p class="stat-label">Polígonos</p>
-                                <p class="stat-value" id="poly-count">0</p>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-3">
-                            <div class="stat-card">
-                                <p class="stat-label">Vértices</p>
-                                <p class="stat-value" id="vert-count">0</p>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-3">
-                            <div class="stat-card">
-                                <p class="stat-label">Tamanho</p>
-                                <p class="stat-value" id="model-size">0 MB</p>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-3">
-                            <div class="stat-card">
-                                <p class="stat-label">Animações</p>
-                                <p class="stat-value" id="anim-count">0</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Mode Selectors -->
-                    <div class="d-flex flex-wrap gap-2 mb-5">
-                        <a href="pyramid.html" class="btn btn-premium flex-grow-1">💎 Holograma</a>
-                        <a href="vr.html" class="btn btn-premium flex-grow-1">🥽 Modo VR</a>
-                        <a href="viewer.html" class="btn btn-outline-premium flex-grow-1">📱 Ver em AR</a>
-                    </div>
-
-                    <!-- Sync Section -->
-                    <div class="sync-panel text-center">
-                        <h4 class="h6 font-heading text-uppercase mb-3" style="letter-spacing: 1px;">Sincronização com Celular</h4>
-                        <p class="text-muted small mb-4">Gere um QR Code para ver este modelo em Realidade Aumentada no seu smartphone.</p>
-
-                        <div id="qr-section" style="display: none;">
-                            <div class="qr-wrapper-modern mb-4">
-                                <div id="qrcode"></div>
-                            </div>
-                            <div class="alert alert-info py-2 small" id="sync-status" style="display: none;">
-                                ✅ Pronto para o Celular!
-                            </div>
-
-                        </div>
-
-                        <button class="btn btn-premium w-100 py-3" id="btn-sync-cloud">
-                            🚀 Sincronizar e Gerar QR Code
-                        </button>
-
-                        <!-- Hidden config -->
-                        <div style="display: none;">
-                            <input type="text" id="ip-config" value="">
+                        <div class="d-flex gap-2 w-100 mt-2">
+                             <a id="link-holograma" href="pyramid.html" class="btn-action-secondary">💎 HOLOGRAMA</a>
+                             <a id="link-vr" href="vr.html" class="btn-action-secondary">🥽 MODO VR</a>
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+
             </div>
         </div>
 

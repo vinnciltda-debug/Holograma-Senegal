@@ -25,12 +25,51 @@ document.addEventListener('DOMContentLoaded', () => {
         getModelFromDB().then(blob => {
             if (blob) {
                 const file = new File([blob], modelName, { type: "model/gltf-binary" });
-                handleFile(file, false);
-                if (syncedUrl) updateDynamicQR(syncedUrl);
+                // No novo fluxo mobile, não carregamos automaticamente o card de análise
+                // handleFile(file, false);
             }
         });
     }
 });
+
+/**
+ * Abre o visualizador moderno (foco mobile)
+ */
+function openModernViewer(path, name, tag) {
+    const overlay = document.getElementById('modern-viewer-overlay');
+    const viewer = document.getElementById('main-model-viewer');
+    
+    document.getElementById('v-name').textContent = name;
+    document.getElementById('v-tag').textContent = tag;
+    
+    // Configurar links dos modos extras
+    document.getElementById('link-holograma').href = `pyramid.html?model=${encodeURIComponent(window.location.origin + '/' + path)}`;
+    document.getElementById('link-vr').href = `vr.html?model=${encodeURIComponent(window.location.origin + '/' + path)}`;
+
+    viewer.src = path;
+    overlay.style.display = 'flex';
+    document.body.style.overflow = 'hidden'; // Trava scroll do fundo
+}
+
+function closeModernViewer() {
+    const overlay = document.getElementById('modern-viewer-overlay');
+    overlay.style.display = 'none';
+    document.body.style.overflow = 'auto';
+    
+    // Parar o viewer para economizar memória
+    const viewer = document.getElementById('main-model-viewer');
+    viewer.src = "";
+}
+
+function triggerAR() {
+    const viewer = document.getElementById('main-model-viewer');
+    if (viewer.activateAR) {
+        viewer.activateAR();
+    } else {
+        alert("Seu navegador não suporta Realidade Aumentada nativa.");
+    }
+}
+
 
 /**
  * Carrega um modelo do catálogo local
