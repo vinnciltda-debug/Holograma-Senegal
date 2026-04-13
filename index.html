@@ -24,44 +24,23 @@
     <div class="bg-shape shape-1"></div>
     <div class="bg-shape shape-2"></div>
 
-    <!-- Side Pagination (Aesthetic) -->
-    <div class="side-dots">
-        <div class="dot active"></div>
-        <div class="dot"></div>
-        <div class="dot"></div>
-        <div class="dot"></div>
-        <div class="dot"></div>
-        <div class="dot"></div>
-        <div class="dot"></div>
-        <div class="dot"></div>
-    </div>
-
-
-    <!-- Navbar (Centered Style from Image) -->
-    <nav class="navbar">
-        <div class="container d-flex flex-column align-items-center">
-            <div class="nav-links-hub mb-3">
-                <a href="#" class="nav-item-hub active">APRESENTAÇÃO</a>
-                <a href="#" class="nav-item-hub">PESQUISA & FONTES</a>
-            </div>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
             <a class="navbar-brand" href="#">HUB SENEGAL 3D</a>
+            <div class="d-flex align-items-center">
+                <span class="badge-model">EXPRIÊNCIA SENEGAL</span>
+            </div>
         </div>
     </nav>
 
 
-
     <!-- Hero Section -->
-    <section class="container text-center mt-5 mb-5">
+    <section class="container mt-4 mb-5">
         <div class="fade-in-up">
-            <div class="hero-boxes">
-                <div class="hero-box green"></div>
-                <div class="hero-box yellow"></div>
-                <div class="hero-box red"></div>
-            </div>
-            <h1 class="display-1 fw-900 mb-2 hero-gradient-text" style="letter-spacing: -3px; font-weight: 950 !important;">SENEGAL</h1>
-            <p class="text-secondary small text-uppercase" style="letter-spacing: 2px;">Projeto Acadêmico — Análise Multidisciplinar</p>
+            <h1 class="h2 font-heading fw-900 mb-1">Explorar <span class="hero-gradient-text">Senegal</span></h1>
+            <p class="text-muted small">Toque em um item para visualizar em 3D</p>
         </div>
-
 
 
 
@@ -162,7 +141,11 @@
                              <a id="link-holograma" href="pyramid.html" class="btn-action-secondary">💎 HOLOGRAMA</a>
                              <a id="link-vr" href="vr.html" class="btn-action-secondary">🥽 MODO VR</a>
                         </div>
+                        <button class="btn-action-back" onclick="closeModernViewer()">
+                            ← Voltar para Galeria
+                        </button>
                     </div>
+
                 </div>
             </div>
         </div>
