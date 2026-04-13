@@ -1,53 +1,41 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800;900&display=swap');
 
 :root {
-  /* Vibrant Senegal Flag Palette (From Screenshot) */
+  /* Vibrant Senegal Flag Palette (Refined) */
   --sn-green: #00df67;
   --sn-yellow: #ffdf00;
   --sn-red: #ff4d4d;
   
-  /* Deep Dark Theme */
-  --bg-deep: #0a0a0a;
-  --bg-primary: #111111;
+  /* Neutral Dark Theme for Legibility */
+  --bg-deep: #050505;
+  --bg-primary: #0f0f0f;
   --bg-secondary: #1a1a1a;
-  --bg-card: rgba(26, 26, 26, 0.8);
+  --bg-accent: rgba(0, 223, 103, 0.05);
 
   /* Glassmorphism Refined */
-  --glass-bg: rgba(20, 20, 20, 0.6);
-  --glass-border: rgba(0, 223, 103, 0.2);
-  --glass-blur: 20px;
+  --glass-bg: rgba(15, 15, 15, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-blur: 24px;
 
-  /* Functional Gradients */
-  --primary-gradient: linear-gradient(90deg, var(--sn-green), var(--sn-yellow), var(--sn-red));
-  --accent: var(--sn-yellow);
-  
-  /* Text */
+  /* UI Tokens */
+  --primary-gradient: linear-gradient(90deg, var(--sn-green), var(--sn-yellow));
   --text-main: #ffffff;
-  --text-secondary: #e0e0e0;
-  --text-muted: #888888;
+  --text-secondary: #aaaaaa;
+  --text-muted: #666666;
 
-  /* Shadows */
-  --shadow-premium: 0 20px 50px rgba(0, 0, 0, 0.8);
-  --glow-green: 0 0 20px rgba(0, 223, 103, 0.3);
-  --glow-gold: 0 0 15px rgba(255, 223, 0, 0.2);
-
-  --transition-base: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  --radius-xl: 30px;
+  --transition-base: 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
-
-
 
 body {
     background-color: var(--bg-deep);
     color: var(--text-main);
-    font-family: 'Inter', sans-serif;
+    font-family: 'Inter', -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
-    background-image:
-        radial-gradient(at 0% 0%, rgba(0, 133, 63, 0.07) 0px, transparent 40%),
-        radial-gradient(at 100% 0%, rgba(253, 239, 66, 0.05) 0px, transparent 40%),
-        radial-gradient(at 50% 100%, rgba(0, 133, 63, 0.05) 0px, transparent 40%);
     min-height: 100vh;
     overflow-x: hidden;
 }
+
 
 
 h1,
@@ -62,18 +50,19 @@ h3,
 .bg-shape {
     position: fixed;
     z-index: -1;
-    filter: blur(100px);
+    filter: blur(120px);
     border-radius: 50%;
-    opacity: 0.15;
+    opacity: 0.08;
 }
 
 .shape-1 {
-    top: -10%;
-    right: -10%;
-    width: 600px;
-    height: 600px;
+    top: -100px;
+    right: -100px;
+    width: 400px;
+    height: 400px;
     background: var(--sn-green);
 }
+
 
 .shape-2 {
     bottom: -10%;
@@ -377,21 +366,21 @@ h3,
 }
 
 .catalog-card {
-    background: white;
+    background: var(--bg-primary);
+    border: 1px solid var(--glass-border);
     border-radius: 2rem;
     overflow: hidden;
-    border: 1px solid rgba(0,0,0,0.05);
-    box-shadow: var(--shadow-soft);
     cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.4s var(--transition-base);
     position: relative;
 }
 
 .catalog-card:hover {
     transform: translateY(-8px);
-    box-shadow: var(--shadow-glow-green);
-    border-color: var(--sn-yellow);
+    box-shadow: 0 15px 35px rgba(0, 223, 103, 0.15);
+    border-color: var(--sn-green);
 }
+
 
 
 .catalog-thumb {
@@ -446,12 +435,13 @@ h3,
 }
 
 .catalog-tag {
-    font-size: 0.7rem;
-    font-weight: 700;
-    color: var(--sn-yellow);
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: var(--sn-green);
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
 }
+
 
 
 
@@ -460,11 +450,12 @@ h3,
     position: fixed;
     inset: 0;
     background: var(--bg-deep);
-    z-index: 2000;
-    display: none; /* Hidden by default */
+    z-index: 2010;
+    display: none;
     flex-direction: column;
-    animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
 
 
 @keyframes slideUp {
