@@ -1,0 +1,8 @@
+Para os modelos 3D funcionarem corretamente, abra o site pelo arquivo:
+
+abrir-site.bat
+
+Importante:
+- Nao abra direto pelo index.html, porque o navegador pode bloquear arquivos .glb.
+- Deixe a janela preta/azul do servidor aberta enquanto usa o site.
+- Quando terminar, pode fechar essa janela.
