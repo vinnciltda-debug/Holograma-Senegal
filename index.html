@@ -1,182 +1,241 @@
 <!DOCTYPE html>
-<!-- Build Timestamp: 2026-04-13 15:16 -->
 <html lang="pt-br">
-
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0c1f17">
     <title>Senegal GO | Patrimônio Digital</title>
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles/main.css">
-    <!-- Scripts Externos -->
+
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-
 </head>
 
 <body>
-    <div class="bg-shape shape-1"></div>
-    <div class="bg-shape shape-2"></div>
+    <header class="app-header">
+        <a class="brand" href="index.html" aria-label="Senegal GO">
+            <span class="brand-mark flag-logo" aria-hidden="true">
+                <span></span>
+                <span></span>
+                <span></span>
+            </span>
+            <span>SENEGAL GO</span>
+        </a>
+        <span class="status-pill">Patrimônio digital</span>
+    </header>
 
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg">
-        <div class="container">
-            <a class="navbar-brand" href="#">SENEGAL GO</a>
-            <div class="d-flex align-items-center">
-                <span class="badge-model">EXPRIÊNCIA SENEGAL</span>
+    <main>
+        <section class="hero" aria-labelledby="hero-title">
+            <div class="hero-copy hero-brand-lockup">
+                <div class="flag-mark" aria-hidden="true">
+                    <span class="flag-green"></span>
+                    <span class="flag-yellow"></span>
+                    <span class="flag-red"></span>
+                </div>
+                <h1 id="hero-title" class="senegal-wordmark">SENEGAL</h1>
+                <p class="academic-subtitle">Projeto Acadêmico — Análise Multidisciplinar</p>
+                <p class="hero-support">Explore cultura, arquitetura e sabores em 3D, realidade aumentada, holograma e VR.</p>
             </div>
-        </div>
-    </nav>
-
-
-    <section class="container-fluid px-4 mt-4 mb-5">
-        <div class="row justify-content-center">
-            <div class="col-12 col-md-10 col-lg-8">
-                <div class="fade-in-up mb-4">
-                    <h1 class="h2 font-heading fw-900 mb-1">Explorar <span class="hero-gradient-text">Senegal</span></h1>
-                    <p class="text-muted small">Toque em um item para visualizar em 3D</p>
+            <div class="hero-panel" aria-label="Resumo da experiência">
+                <div>
+                    <strong>11</strong>
+                    <span>modelos 3D</span>
                 </div>
-
-                <!-- Catalog Section -->
-                <div id="catalog-section" class="fade-in-up">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <span class="badge-model">Patrimônio Cultural</span>
-                        <span class="badge-model">4 Modelos</span>
-                    </div>
-                    
-                    <div class="model-grid" id="model-catalog">
-                        <!-- Content remains same -->
-
-
-
-                        <!-- Chapeu -->
-                        <div class="catalog-card" onclick="openModernViewer('african_cultural_hat_tengane.glb', 'Chapéu Cultural Tengane', 'Cultura')">
-                            <div class="catalog-thumb">
-                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-                            </div>
-                            <div class="catalog-info">
-                                <span class="catalog-tag">Cultura</span>
-                                <h3 class="catalog-title">Chapéu Tengane</h3>
-                            </div>
-                        </div>
-
-
-                        <!-- Barco -->
-                        <div class="catalog-card" onclick="openModernViewer('boat.glb', 'Barco Tradicional', 'Transporte')">
-                            <div class="catalog-thumb">
-                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10l-6 12H10L4 10h18zM12 2v8M16 6l-4 4-4-4"/></svg>
-                            </div>
-                            <div class="catalog-info">
-                                <span class="catalog-tag">Transporte</span>
-                                <h3 class="catalog-title">Barco Tradicional</h3>
-                            </div>
-                        </div>
-
-
-                        <!-- Edificio -->
-                        <div class="catalog-card" onclick="openModernViewer('round+modern+building+3d+model.glb', 'Edifício Moderno', 'Arquitetura')">
-                            <div class="catalog-thumb">
-                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4M8 6h.01M16 6h.01M8 10h.01M16 10h.01M8 14h.01M16 14h.01"/></svg>
-                            </div>
-                            <div class="catalog-info">
-                                <span class="catalog-tag">Arquitetura</span>
-                                <h3 class="catalog-title">Edifício Moderno</h3>
-                            </div>
-                        </div>
-
-
-                        <!-- Peixe -->
-                        <div class="catalog-card" onclick="openModernViewer('grilled+fish+dish+3d+model.glb', 'Prato de Peixe Grelhado', 'Gastronomia')">
-                            <div class="catalog-thumb">
-                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 0 1-12 0c0-3.3 2.7-6 6-6s6 2.7 6 6zM6 15h12v1a5 5 0 0 1-10 0v-1z"/><path d="M2 20h20l-2 2H4l-2-2z"/></svg>
-                            </div>
-                            <div class="catalog-info">
-                                <span class="catalog-tag">Gastronomia</span>
-                                <h3 class="catalog-title">Peixe Grelhado</h3>
-                            </div>
-                        </div>
-
-                    </div>
+                <div>
+                    <strong>AR</strong>
+                    <span>no celular</span>
                 </div>
-
-
-                <!-- Modern Fullscreen Viewer (Hidden by default) -->
-                <div id="modern-viewer-overlay" class="modern-viewer-overlay">
-                    <button class="btn-close-viewer" onclick="closeModernViewer()">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                    </button>
-                    
-                    <div class="viewer-header">
-                        <span id="v-tag" class="catalog-tag">TAG</span>
-                        <h2 id="v-name" class="h4 mb-0 font-heading">NOME DO MODELO</h2>
-                    </div>
-
-                    <div class="viewer-content">
-                        <model-viewer id="main-model-viewer"
-                            camera-controls
-                            auto-rotate
-                            auto-rotate-delay="3000"
-                            rotation-per-second="30deg"
-                            shadow-intensity="1.5"
-                            shadow-softness="1"
-                            exposure="1.2"
-                            environment-image="neutral"
-                            ar
-                            ar-modes="webxr scene-viewer quick-look"
-                            ar-placement="floor"
-                            touch-action="pan-y">
-                            
-                            <div class="progress-bar-container" slot="progress-bar">
-                                <div class="update-bar"></div>
-                            </div>
-                            
-                            <div class="viewer-hint">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/><path d="M22 10V4.5A2.5 2.5 0 0 0 19.5 2H14"/><path d="M16.1 3a2.1 2.1 0 0 1 3.14 0"/><path d="M7 15l-3 3 3 3"/><path d="M4 18h7"/></svg>
-                                Arraste para girar • Pinça para zoom
-                            </div>
-                        </model-viewer>
-                    </div>
-
-
-                    <div class="viewer-actions-bar">
-                        <button class="btn-action-main" onclick="triggerAR()">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 6V4H4V7H6"/><path d="M17 6V4H20V7H18"/><path d="M7 18V20H4V17H6"/><path d="M17 18V20H20V17H18"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
-                            COLOCAR NA VIDA REAL
-                        </button>
-                        <div class="d-flex gap-2 w-100 mt-2">
-                             <a id="link-holograma" href="pyramid.html" class="btn-action-secondary">💎 HOLOGRAMA</a>
-                             <a id="link-vr" href="vr.html" class="btn-action-secondary">🥽 MODO VR</a>
-                        </div>
-                        <button class="btn-action-back" onclick="closeModernViewer()">
-                            ← Voltar para Galeria
-                        </button>
-                    </div>
-
+                <div>
+                    <strong>VR</strong>
+                    <span>imersivo</span>
                 </div>
             </div>
-        </div>
+        </section>
 
+        <section class="catalog-section" aria-labelledby="catalog-title">
+            <div class="section-heading">
+                <span class="eyebrow">Galeria</span>
+                <h2 id="catalog-title">Escolha um artefato</h2>
+                <div class="gallery-mode" aria-label="Modo de abertura dos modelos">
+                    <button id="mode-3d" class="gallery-mode-button is-active" type="button" onclick="setCatalogMode('3d')">Ver em 3D</button>
+                    <button id="mode-hologram" class="gallery-mode-button" type="button" onclick="setCatalogMode('hologram')">Holograma</button>
+                </div>
             </div>
+
+            <div class="model-grid" id="model-catalog">
+                <button class="catalog-card" type="button" onclick="openCatalogModel('assets/models/tengane-hat.glb', 'Chapéu Cultural Tengane', 'Cultura')">
+                    <span class="catalog-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11.5c2.5-4.7 15.5-4.7 18 0"/><path d="M5 12c1.7 4.2 12.3 4.2 14 0"/><path d="M8 11c.4-4.5 7.6-4.5 8 0"/></svg>
+                    </span>
+                    <span class="catalog-content">
+                        <span class="catalog-tag">Cultura</span>
+                        <strong>Chapéu Tengane</strong>
+                        <small>Tradição, identidade e presença visual.</small>
+                    </span>
+                </button>
+
+                <button class="catalog-card" type="button" onclick="openCatalogModel('assets/models/traditional-boat.glb', 'Barco Tradicional', 'Transporte')">
+                    <span class="catalog-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 12h16l-3 6H7l-3-6Z"/><path d="M12 4v8"/><path d="M8 8l4-4 4 4"/></svg>
+                    </span>
+                    <span class="catalog-content">
+                        <span class="catalog-tag">Transporte</span>
+                        <strong>Barco Tradicional</strong>
+                        <small>Memória costeira em forma navegável.</small>
+                    </span>
+                </button>
+
+                <button class="catalog-card" type="button" onclick="openCatalogModel('assets/models/modern-round-building.glb', 'Edifício Moderno', 'Arquitetura')">
+                    <span class="catalog-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 21V5c0-1.1.9-2 2-2h8c1.1 0 2 .9 2 2v16"/><path d="M9 8h.01M15 8h.01M9 12h.01M15 12h.01M9 16h.01M15 16h.01"/><path d="M4 21h16"/></svg>
+                    </span>
+                    <span class="catalog-content">
+                        <span class="catalog-tag">Arquitetura</span>
+                        <strong>Edifício Moderno</strong>
+                        <small>Linhas urbanas para visualizar em escala.</small>
+                    </span>
+                </button>
+
+                <button class="catalog-card" type="button" onclick="openCatalogModel('assets/models/grilled-fish-dish.glb', 'Prato de Peixe Grelhado', 'Gastronomia')">
+                    <span class="catalog-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 15c2.8-4 8.2-5 14-2l2-2v7l-2-2c-5.8 3-11.2 2-14-2Z"/><path d="M7 14h.01"/><path d="M3 20h18"/></svg>
+                    </span>
+                    <span class="catalog-content">
+                        <span class="catalog-tag">Gastronomia</span>
+                        <strong>Peixe Grelhado</strong>
+                        <small>Cultura alimentar com textura e volume.</small>
+                    </span>
+                </button>
+
+                <button class="catalog-card" type="button" onclick="openCatalogModel('assets/models/senegal_hand_carved_mask.glb', 'Máscara Artesanal Senegalesa', 'Arte')">
+                    <span class="catalog-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3c4 0 7 3 7 8 0 6-3.5 10-7 10S5 17 5 11c0-5 3-8 7-8Z"/><path d="M9 10h.01M15 10h.01"/><path d="M9 15c1.8 1.2 4.2 1.2 6 0"/><path d="M12 3v18"/></svg>
+                    </span>
+                    <span class="catalog-content">
+                        <span class="catalog-tag">Arte</span>
+                        <strong>Máscara Artesanal</strong>
+                        <small>Escultura cultural para observar detalhes e expressão.</small>
+                    </span>
+                </button>
+
+                <button class="catalog-card" type="button" onclick="openCatalogModel('assets/models/senegal_anim.glb', 'Senegal Animado', 'Território')">
+                    <span class="catalog-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z"/><path d="M3 12h18"/><path d="M12 3c2.4 2.5 3.6 5.5 3.6 9S14.4 18.5 12 21"/><path d="M12 3c-2.4 2.5-3.6 5.5-3.6 9s1.2 6.5 3.6 9"/></svg>
+                    </span>
+                    <span class="catalog-content">
+                        <span class="catalog-tag">Território</span>
+                        <strong>Senegal Animado</strong>
+                        <small>Modelo temático para apresentar o país em movimento.</small>
+                    </span>
+                </button>
+
+                <button class="catalog-card" type="button" onclick="openCatalogModel('assets/models/giant+statue+3d+model.glb', 'Estátua Monumental', 'Monumento')">
+                    <span class="catalog-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v6"/><path d="M9 6h6"/><path d="M8 21h8"/><path d="M10 21l1-10h2l1 10"/><path d="M7 11h10"/></svg>
+                    </span>
+                    <span class="catalog-content">
+                        <span class="catalog-tag">Monumento</span>
+                        <strong>Estátua Monumental</strong>
+                        <small>Peça vertical leve para projeção em escala real.</small>
+                    </span>
+                </button>
+
+                <button class="catalog-card" type="button" onclick="openCatalogModel('https://github.com/vinnciltda-debug/Holograma-Senegal/releases/download/models-online-v1/stadium%2B3d%2Bmodel.glb', 'Estádio 3D', 'Esporte')">
+                    <span class="catalog-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="12" rx="9" ry="5"/><ellipse cx="12" cy="12" rx="5" ry="2.6"/><path d="M3 12v4c0 2.8 4 5 9 5s9-2.2 9-5v-4"/></svg>
+                    </span>
+                    <span class="catalog-content">
+                        <span class="catalog-tag">Esporte</span>
+                        <strong>Estádio</strong>
+                        <small>Arena esportiva para visualizar estrutura e arquibancadas.</small>
+                    </span>
+                </button>
+
+                <button class="catalog-card" type="button" onclick="openCatalogModel('https://github.com/vinnciltda-debug/Holograma-Senegal/releases/download/models-online-v1/coastal%2Bcity%2B3d%2Bmodel.glb', 'Cidade Costeira', 'Cidade')">
+                    <span class="catalog-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 20h18"/><path d="M5 20V9h5v11"/><path d="M14 20V5h5v15"/><path d="M7 12h1M7 15h1M16 8h1M16 11h1M16 14h1"/><path d="M3 6c2 1.4 4 1.4 6 0s4-1.4 6 0 4 1.4 6 0"/></svg>
+                    </span>
+                    <span class="catalog-content">
+                        <span class="catalog-tag">Cidade</span>
+                        <strong>Cidade Costeira</strong>
+                        <small>Modelo maior com paisagem urbana e atmosfera litorânea.</small>
+                    </span>
+                </button>
+
+                <button class="catalog-card" type="button" onclick="openCatalogModel('https://github.com/vinnciltda-debug/Holograma-Senegal/releases/download/models-online-v1/cidade%2Bmodelo%2B3d.glb', 'Cidade Modelo 3D', 'Cidade')">
+                    <span class="catalog-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20h16"/><path d="M6 20V7l4-2v15"/><path d="M14 20V4l4 2v14"/><path d="M8 10h1M8 13h1M8 16h1M16 9h1M16 12h1M16 15h1"/></svg>
+                    </span>
+                    <span class="catalog-content">
+                        <span class="catalog-tag">Cidade</span>
+                        <strong>Cidade Modelo</strong>
+                        <small>Outra composição urbana para visualizar no holograma.</small>
+                    </span>
+                </button>
+
+                <button class="catalog-card catalog-card-featured" type="button" onclick="openCatalogModel('https://github.com/vinnciltda-debug/Holograma-Senegal/releases/download/models-online-v1/fashion%2Bmodel%2B3d%2Bmodel.glb', 'Mulher Senegalesa', 'Personagem')">
+                    <span class="catalog-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"/><path d="M4 21a8 8 0 0 1 16 0"/><path d="M8 14l4 3 4-3"/></svg>
+                    </span>
+                    <span class="catalog-content">
+                        <span class="catalog-tag">Personagem</span>
+                        <strong>Mulher Senegalesa</strong>
+                        <small>Modelo local com suporte a 3D, holograma e VR.</small>
+                    </span>
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <div id="modern-viewer-overlay" class="modern-viewer-overlay" aria-hidden="true">
+        <button class="icon-button btn-close-viewer" type="button" onclick="closeModernViewer()" aria-label="Fechar visualizador">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+
+        <div class="viewer-header">
+            <span id="v-tag" class="catalog-tag">TAG</span>
+            <h2 id="v-name">Nome do modelo</h2>
         </div>
 
-    </section>
+        <div class="viewer-content">
+            <model-viewer id="main-model-viewer" camera-controls auto-rotate auto-rotate-delay="2500"
+                rotation-per-second="24deg" shadow-intensity="1.3" shadow-softness="1" exposure="1.15"
+                environment-image="neutral" ar ar-modes="webxr scene-viewer quick-look" ar-placement="floor"
+                touch-action="pan-y">
+                <div class="progress-bar-container" slot="progress-bar">
+                    <div class="update-bar"></div>
+                </div>
+                <div class="viewer-hint">Arraste para girar. Use pinça para aproximar.</div>
+            </model-viewer>
+        </div>
 
-    <!-- Footer -->
-    <footer class="py-5 text-center text-muted small">
-        <p>&copy; 2026 Senegal GO. Patrimônio e Tecnologia.</p>
+        <div class="viewer-actions-bar">
+            <button class="btn-action-main" type="button" onclick="triggerAR()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 6V4H4v3h2M17 6V4h3v3h-2M7 18v2H4v-3h2M17 18v2h3v-3h-2"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+                Ver no meu espaço
+            </button>
+            <div class="mode-actions">
+                <a id="link-holograma" href="pyramid.html" class="btn-action-secondary">Holograma</a>
+                <a id="link-vr" href="vr.html" class="btn-action-secondary">Modo VR</a>
+            </div>
+            <button class="btn-action-back" type="button" onclick="closeModernViewer()">Voltar para galeria</button>
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        <p>Senegal GO. Patrimônio e tecnologia em uma experiência móvel.</p>
     </footer>
 
-
-    <!--Scripts de Lógica Modular -->
     <script src="js/db.js"></script>
     <script src="js/main.js"></script>
-
 </body>
 
 </html>
