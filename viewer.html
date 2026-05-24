@@ -159,7 +159,9 @@
             <div id="loading" class="loading-cover">Preparando holograma</div>
             <model-viewer id="viewer" src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
                 alt="Modelo 3D Senegal GO" ar ar-modes="webxr scene-viewer quick-look" camera-controls auto-rotate
-                shadow-intensity="1" environment-image="neutral" exposure="1" touch-action="pan-y">
+                shadow-intensity="1" environment-image="neutral" exposure="1" touch-action="pan-y"
+                loading="eager" reveal="auto" bounds="tight" camera-orbit="0deg 75deg auto"
+                field-of-view="32deg" interaction-prompt="auto">
                 <button slot="ar-button" id="ar-button">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
                         <path d="M7 6V4H4v3h2M17 6V4h3v3h-2M7 18v2H4v-3h2M17 18v2h3v-3h-2" />
