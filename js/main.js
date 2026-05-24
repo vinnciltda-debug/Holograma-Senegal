@@ -3,6 +3,14 @@ const loader = new THREE.GLTFLoader();
 let currentAnimationId = null;
 let currentRenderer = null;
 let catalogMode = '3d';
+let activeViewerCleanup = null;
+
+const HEAVY_MODEL_NAMES = [
+    'cidade+modelo+3d.glb',
+    'coastal+city+3d+model.glb',
+    'fashion+model+3d+model.glb',
+    'stadium+3d+model.glb'
+];
 
 document.addEventListener('DOMContentLoaded', () => {
     const btnReset = document.getElementById('btn-reset');
@@ -21,6 +29,68 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function getAbsoluteModelUrl(path) {
     return new URL(path, window.location.href).href;
+}
+
+function isMobileDevice() {
+    return window.matchMedia('(max-width: 760px), (pointer: coarse)').matches;
+}
+
+function isHeavyModel(path) {
+    return HEAVY_MODEL_NAMES.some((name) => path.includes(name));
+}
+
+function ensureViewerStatus() {
+    const content = document.querySelector('.viewer-content');
+    if (!content) return null;
+
+    let status = document.getElementById('viewer-status');
+    if (!status) {
+        status = document.createElement('div');
+        status.id = 'viewer-status';
+        status.className = 'viewer-status';
+        status.innerHTML = `
+            <p id="viewer-status-text"></p>
+            <button id="viewer-status-retry" class="btn-action-secondary" type="button">Tentar de novo</button>
+        `;
+        content.appendChild(status);
+    }
+
+    return status;
+}
+
+function setViewerStatus(message = '', retryAction = null) {
+    const status = ensureViewerStatus();
+    if (!status) return;
+
+    const text = status.querySelector('#viewer-status-text');
+    const retry = status.querySelector('#viewer-status-retry');
+    if (text) text.textContent = message;
+
+    status.classList.toggle('is-visible', Boolean(message));
+    if (retry) {
+        retry.style.display = retryAction ? 'inline-flex' : 'none';
+        retry.onclick = retryAction;
+    }
+}
+
+function resetModelViewer(viewer) {
+    if (activeViewerCleanup) {
+        activeViewerCleanup();
+        activeViewerCleanup = null;
+    }
+
+    viewer.pause?.();
+    viewer.removeAttribute('src');
+    viewer.setAttribute('camera-orbit', '0deg 75deg auto');
+    viewer.setAttribute('camera-target', 'auto auto auto');
+    viewer.setAttribute('field-of-view', '32deg');
+    viewer.setAttribute('bounds', 'tight');
+    viewer.setAttribute('loading', 'eager');
+    viewer.setAttribute('reveal', 'auto');
+    viewer.setAttribute('interaction-prompt', 'auto');
+    viewer.setAttribute('touch-action', 'pan-y');
+    viewer.removeAttribute('poster');
+    setViewerStatus('');
 }
 
 function setCatalogMode(mode) {
@@ -51,6 +121,7 @@ function openModernViewer(path, name, tag) {
 
     if (!overlay || !viewer) return;
 
+    resetModelViewer(viewer);
     document.getElementById('v-name').textContent = name;
     document.getElementById('v-tag').textContent = tag;
     document.getElementById('link-holograma').href = `pyramid.html?model=${encodeURIComponent(getAbsoluteModelUrl(path))}`;
@@ -59,21 +130,47 @@ function openModernViewer(path, name, tag) {
     if (progressBar) progressBar.style.width = '0%';
     if (progressContainer) progressContainer.style.display = 'block';
 
+    const retryLoad = () => openModernViewer(path, name, tag);
+    let slowTimer = null;
+
     const onProgress = (event) => {
         const progress = event.detail.totalProgress * 100;
         if (progressBar) progressBar.style.width = `${progress}%`;
     };
 
     const onLoad = () => {
+        clearTimeout(slowTimer);
         if (progressContainer) progressContainer.style.display = 'none';
-        viewer.removeEventListener('progress', onProgress);
-        viewer.removeEventListener('load', onLoad);
+        setViewerStatus('');
+        requestAnimationFrame(() => {
+            viewer.resetTurntableRotation?.();
+            viewer.jumpCameraToGoal?.();
+            viewer.play?.();
+        });
+    };
+
+    const onError = () => {
+        clearTimeout(slowTimer);
+        if (progressContainer) progressContainer.style.display = 'none';
+        setViewerStatus('Esse modelo ficou pesado para o aparelho. Tente novamente ou abra outro modelo.', retryLoad);
     };
 
     viewer.addEventListener('progress', onProgress);
     viewer.addEventListener('load', onLoad);
+    viewer.addEventListener('error', onError);
+    activeViewerCleanup = () => {
+        clearTimeout(slowTimer);
+        viewer.removeEventListener('progress', onProgress);
+        viewer.removeEventListener('load', onLoad);
+        viewer.removeEventListener('error', onError);
+    };
 
-    viewer.src = path;
+    const slowMessage = isMobileDevice() && isHeavyModel(path)
+        ? 'Modelo grande: carregando uma versão otimizada para celular...'
+        : 'Carregando modelo 3D...';
+    slowTimer = setTimeout(() => setViewerStatus(slowMessage, retryLoad), isHeavyModel(path) ? 9000 : 14000);
+
+    viewer.src = `${path}${path.includes('?') ? '&' : '?'}v=${Date.now()}`;
     overlay.classList.add('is-open');
     overlay.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
@@ -89,7 +186,7 @@ function closeModernViewer() {
     }
 
     document.body.style.overflow = '';
-    if (viewer) viewer.src = '';
+    if (viewer) resetModelViewer(viewer);
 }
 
 function triggerAR() {
@@ -256,7 +353,7 @@ function initPreview(loadedModel) {
 
     currentRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     currentRenderer.setSize(container.clientWidth, container.clientHeight);
-    currentRenderer.setPixelRatio(window.devicePixelRatio);
+    currentRenderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
     container.appendChild(currentRenderer.domElement);
 
     scene.add(new THREE.AmbientLight(0xffffff, 1));
