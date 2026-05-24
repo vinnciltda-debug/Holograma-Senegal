@@ -515,6 +515,41 @@ main {
   pointer-events: none;
 }
 
+.viewer-status {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 3;
+  display: none;
+  width: min(320px, calc(100vw - 36px));
+  padding: 16px;
+  color: var(--ink);
+  text-align: center;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: var(--shadow-md);
+  transform: translate(-50%, -50%);
+}
+
+.viewer-status.is-visible {
+  display: grid;
+  gap: 12px;
+}
+
+.viewer-status p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+.viewer-status .btn-action-secondary {
+  width: 100%;
+  min-height: 44px;
+}
+
 .viewer-actions-bar {
   display: grid;
   gap: 10px;
