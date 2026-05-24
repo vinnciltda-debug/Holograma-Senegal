@@ -16,30 +16,24 @@ async function init() {
     scene.add(light);
 
     const loader = new GLTFLoader();
-
-    // Load model logic
     const urlParams = new URLSearchParams(window.location.search);
     const externalUrl = urlParams.get('model');
     const hasCustom = localStorage.getItem('hasCustomModel');
-
     const defaultModel = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
 
     if (externalUrl) {
         loader.load(externalUrl, (gltf) => setupModel(gltf));
-    } else if (hasCustom) {
-        if (typeof getModelFromDB === 'function') {
-            const blob = await getModelFromDB();
-            if (blob) {
-                loader.load(URL.createObjectURL(blob), (gltf) => setupModel(gltf));
-            } else {
-                loader.load(defaultModel, (gltf) => setupModel(gltf));
-            }
+    } else if (hasCustom && typeof getModelFromDB === 'function') {
+        const blob = await getModelFromDB();
+        if (blob) {
+            loader.load(URL.createObjectURL(blob), (gltf) => setupModel(gltf));
+        } else {
+            loader.load(defaultModel, (gltf) => setupModel(gltf));
         }
     } else {
         loader.load(defaultModel, (gltf) => setupModel(gltf));
     }
 
-    // Configurar as 4 vistas
     views.forEach(id => {
         const container = document.getElementById(id);
         if (!container) return;
@@ -64,9 +58,10 @@ function setupModel(gltf) {
     const box = new THREE.Box3().setFromObject(model);
     const center = box.getCenter(new THREE.Vector3());
     const size = box.getSize(new THREE.Vector3());
-    const maxDim = Math.max(size.x, size.y, size.z);
-    model.scale.setScalar(2 / maxDim);
-    model.position.sub(center.multiplyScalar(2 / maxDim));
+    const maxDim = Math.max(size.x, size.y, size.z) || 1;
+    const scale = 2 / maxDim;
+    model.scale.setScalar(scale);
+    model.position.sub(center.multiplyScalar(scale));
     scene.add(model);
 
     if (gltf.animations.length > 0) {
