@@ -12,26 +12,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (isMinimal) {
             document.body.classList.add('minimal-mode');
-            const overlay = document.querySelector('.model-info-overlay');
-            if (overlay) overlay.style.display = 'none';
-            const footer = document.querySelector('.mt-4.text-center');
-            if (footer) footer.style.display = 'none';
         }
 
         if (externalUrl) {
             modelViewer.src = externalUrl;
-            if (titleText) titleText.textContent = "Modelo Remoto";
+            if (titleText) titleText.textContent = 'Modelo remoto';
         } else if (localStorage.getItem('hasCustomModel')) {
-
-            // getModelFromDB() vem do js/db.js
             const blob = await getModelFromDB();
             if (blob) {
                 modelViewer.src = URL.createObjectURL(blob);
-                if (titleText) titleText.textContent = localStorage.getItem('modelName') || "Análise Ativa";
-
+                if (titleText) titleText.textContent = localStorage.getItem('modelName') || 'Análise ativa';
             }
-        } else {
-            if (titleText) titleText.textContent = "Astronauta (Padrão)";
+        } else if (titleText) {
+            titleText.textContent = 'Modelo padrão';
         }
     }
 
@@ -40,11 +33,11 @@ document.addEventListener('DOMContentLoaded', () => {
     modelViewer.addEventListener('load', () => {
         if (loading) {
             loading.style.opacity = '0';
-            setTimeout(() => loading.style.display = 'none', 600);
+            setTimeout(() => loading.style.display = 'none', 450);
         }
     });
 
-    modelViewer.addEventListener('error', (e) => {
-        console.error("Erro no Model Viewer:", e);
+    modelViewer.addEventListener('error', (event) => {
+        console.error('Erro no Model Viewer:', event);
     });
 });
